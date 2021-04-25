@@ -1,0 +1,34 @@
+{
+  "manifest_version": 2,
+  "name": "Brokalys",
+  "description": "Real estate price historical comparison",
+  "homepage_url": "https://brokalys.com",
+  "version": "1.0.0",
+  "icons": {
+    "512": "logo512.png"
+  },
+  "browser_action": {
+    "default_icon": "logo512.png",
+    "default_popup": "index.html"
+  },
+  "background": {
+    "scripts": ["./jquery.js"]
+  },
+  "content_scripts": [{
+    "matches": ["https://www.ss.lv/*"],
+    "all_frames": true,
+    "js": [
+      "./content.js",
+      "./jquery.js"
+    ],
+    "run_at": "document_end"
+  }],
+  "permissions": [
+    "activeTab"
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "web_accessible_resources": [
+    "index.html",
+    "/static/*"
+  ]
+}
