@@ -1,14 +1,25 @@
 import { gql, useQuery } from '@apollo/client';
 
 const GET_STATS = gql`
-  query ChromeExtension_GetState($lat: Float!, $lng: Float!) {
+  query ChromeExtension_GetState(
+    $lat: Float!
+    $lng: Float!
+    $filter: PropertyFilter
+  ) {
     point(lat: $lat, lng: $lng) {
       buildings {
         id
-        properties {
+        properties(filter: $filter) {
           results {
+            id
+            category
+            type
+            rent_type
             price
-            price_per_sqm
+            calc_price_per_sqm
+            area
+            rooms
+            published_at
           }
         }
       }
@@ -27,12 +38,26 @@ export default function useHistoricalData(lat, lng) {
     variables: {
       lat,
       lng,
+      filter: {
+        category: {
+          in: ['apartment', 'house', 'office'],
+        },
+        type: {
+          in: ['sell', 'rent', 'auction'],
+        },
+        price: {
+          gt: 1,
+        },
+      },
     },
     skip: !lat || !lng,
   });
 
   return {
-    data: data ? data.point.buildings[0]?.properties.results : [],
+    data: {
+      building: data?.point?.buildings?.[0] || {},
+      properties: data?.point?.buildings?.[0]?.properties.results || [],
+    },
     loading,
     error,
   };
