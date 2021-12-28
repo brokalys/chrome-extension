@@ -1,36 +1,11 @@
-/* global chrome */
+function removeEmpty(data) {
+  Object.keys(data).forEach((key) => {
+    if (!data[key] || data[key] === '' || Object.keys(data[key]).length === 0) {
+      delete data[key];
+    }
+  });
 
-function attachIframe() {
-  const extensionOrigin = 'chrome-extension://' + chrome.runtime.id;
-
-  if (!location.ancestorOrigins.contains(extensionOrigin)) {
-    // fetch(chrome.runtime.getURL('index.html'))
-    //   .then((response) => response.text())
-    //   .then((html) => {
-    //     const styleStashHTML = html.replace(/\/static\//g, `${extensionOrigin}/static/`);
-    //     // window.$(styleStashHTML).appendTo('body');
-
-    //     const wrapper = document.createElement("div");
-    //     wrapper.innerHTML = styleStashHTML;
-    //     console.log('wrapper', wrapper);
-    //     console.log('wrapper', wrapper.querySelector('body'));
-
-    //     document.body.appendChild(wrapper);
-    //   })
-    //   .catch((error) => {
-    //     console.warn(error);
-    //   });
-
-    // const iframe = document.createElement('iframe');
-    // iframe.setAttribute('src', chrome.runtime.getURL('index.html'));
-    // iframe.style.width = "640px";
-    // iframe.style.height = "480px";
-    // iframe.style.position = 'fixed';
-    // iframe.style.top = 0;
-    // iframe.style.right = 0;
-    // iframe.style.zIndex = 100;
-    // document.body.appendChild(iframe);
-  }
+  return data;
 }
 
 function runCrawler() {
@@ -56,14 +31,19 @@ function runCrawler() {
     case 'Offices':
       category = 'office';
       break;
+    case 'Mežs': // @todo: ru, en
+      category = 'forest';
+      break;
     case 'Telpas':
-    case 'Mežs':
+    default:
       category = 'other';
       break;
   }
 
   let type;
-  switch (document.querySelector('.headtitle').textContent.replace(/^(.*)\/ /, '')) {
+  switch (
+    document.querySelector('.headtitle').textContent.replace(/^(.*)\/ /, '')
+  ) {
     case 'Pārdod':
     case 'Продают':
     case 'Sell':
@@ -108,7 +88,6 @@ function runCrawler() {
 
   const priceText = getElementText('#tdo_8');
   const price = priceText.match(/^([0-9\s\.]+) €/)[1].replace(/\s/g, '');
-  const price_per_sqm = priceText.match(/\(([0-9\s\.]+) €/)[1].replace(/\s/g, '');
   const rent_type = (() => {
     try {
       const identifier = priceText.match(/€\/(.*?) /)[1];
@@ -132,11 +111,14 @@ function runCrawler() {
         case 'мес.':
         case 'mon.':
           return 'monthly';
+
+        default:
+          throw new Error('Not able to match');
       }
     } catch (e) {}
   })();
 
-  const data = {
+  const data = removeEmpty({
     source: 'ss.lv',
     url: document.location.origin + document.location.pathname,
     category,
@@ -144,16 +126,26 @@ function runCrawler() {
     rent_type,
 
     price,
-    price_per_sqm,
+    price_per_sqm: (() => {
+      try {
+        return priceText.match(/\(([0-9\s\.]+) €/)[1].replace(/\s/g, '');
+      } catch (e) {}
+    })(),
 
     lat: (() => {
       try {
-        return document.querySelector('#mnu_map').getAttribute('onclick').match(/c=([0-9\.]+),\s?([0-9\.]+),/)[1];
+        return document
+          .querySelector('#mnu_map')
+          .getAttribute('onclick')
+          .match(/c=([0-9\.]+),\s?([0-9\.]+),/)[1];
       } catch (e) {}
     })(),
     lng: (() => {
       try {
-        return document.querySelector('#mnu_map').getAttribute('onclick').match(/c=([0-9\.]+),\s?([0-9\.]+),/)[2];
+        return document
+          .querySelector('#mnu_map')
+          .getAttribute('onclick')
+          .match(/c=([0-9\.]+),\s?([0-9\.]+),/)[2];
       } catch (e) {}
     })(),
 
@@ -204,26 +196,34 @@ function runCrawler() {
     contact_phone2: getElementText('#ph_td_2'),
     contact_company: (() => {
       try {
-        return document.querySelector('#usr_logo').parentElement.parentElement.previousElementSibling.querySelector('.ads_contacts').textContent;
+        return document
+          .querySelector('#usr_logo')
+          .parentElement.parentElement.previousElementSibling.querySelector(
+            '.ads_contacts',
+          ).textContent;
       } catch (e) {}
     })(),
 
     building_project: getElementText('#tdo_6'),
     building_material: getElementText('#tdo_2'),
 
-    images: [...document.querySelectorAll('.pic_dv_thumbnail a')].map((el) => el.href),
+    images: [...document.querySelectorAll('.pic_dv_thumbnail a')].map(
+      (el) => el.href,
+    ),
 
     foreign_id: (() => {
       try {
-        const el = [...document.querySelectorAll('script')].find((el) => el.src.includes('chk.php'));
+        const el = [...document.querySelectorAll('script')].find((el) =>
+          el.src.includes('chk.php'),
+        );
         return el.src.match(/m=(.*?)&/)[1];
       } catch (e) {}
     })(),
 
-    additional_data: {
+    additional_data: removeEmpty({
       convenience: getElementText('#tdo_59'),
       land_usage: getElementText('#tdo_228'),
-    },
+    }),
 
     cadastre_number: getElementText('#tdo_1631'),
     land_area: (() => {
@@ -237,7 +237,9 @@ function runCrawler() {
         return area.endsWith('m²') ? 'm2' : undefined;
       } catch (e) {}
     })(),
-    published_at: document.querySelector('.msg_footer[align="right"]').textContent.replace(/^(.*?): /, ''),
+    published_at: document
+      .querySelector('.msg_footer[align="right"]')
+      .textContent.replace(/^(.*?): /, ''),
 
     views: (() => {
       const views = parseInt(getElementText('#show_cnt_stat'), 10);
@@ -246,52 +248,21 @@ function runCrawler() {
         return views;
       }
     })(),
-  };
-
-  // Remove blanks
-  Object.keys(data).forEach((key) => {
-    if (!data[key] || data[key] === '') {
-      delete data[key];
-    }
-  });
-  Object.keys(data.additional_data).forEach((key) => {
-    if (!data.additional_data[key] || data.additional_data[key] === '') {
-      delete data.additional_data[key];
-    }
   });
 
-  console.log('data', data);
-  // @todo: send the data
-  window.postMessage({ type: "SS_LV_CRAWLED_DATA", payload: data }, "*");
-
+  console.log('get data', data);
   chrome.runtime.sendMessage({
-    from: 'content',
-    subject: 'showPageAction',
+    type: 'content',
+    payload: 'showPageAction',
   });
   return data;
 }
 
-if (/real-estate/.test(document.location.pathname) && document.location.pathname.startsWith('/msg/')) {
-  attachIframe();
-  setTimeout(runCrawler, 200);
-}
+setTimeout(runCrawler, 200);
 
-window.addEventListener("message", function(event) {
-  console.log('received message', event.data);
-  if (event.source !== window) return;
-  onDidReceiveMessage(event);
-});
-
-async function onDidReceiveMessage(event) {
-  if (event.data.type && (event.data.type === "GET_EXTENSION_ID")) {
-    window.postMessage({ type: "EXTENSION_ID_RESULT", extensionId: chrome.runtime.id }, "*");
-  }
-}
-
-chrome.runtime.onMessage.addListener(
- function(request, sender, response) {
-   console.log('got some message');
-   response(runCrawler());
+chrome.runtime.onMessage.addListener(function (request, sender, response) {
+  console.log('Content: got message', request);
+  response(runCrawler());
 });
 
 // fetch('https://6085b1a7d14a870017578278.mockapi.io/Classifieds', {
