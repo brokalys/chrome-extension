@@ -6,9 +6,10 @@ interface PriceSummaryProps {
   pricesPerSqm: number[];
 }
 
-function average(dataPoints: number[]): number {
+function average(dataPoints: number[], round: boolean = false): number {
   const sum = dataPoints.reduce((carry, num) => carry + num, 0);
-  return parseFloat((sum / dataPoints.length).toFixed(2));
+  const avg = sum / dataPoints.length;
+  return round ? Math.round(avg) : parseFloat(avg.toFixed(2));
 }
 
 const PriceSummary: React.FC<PriceSummaryProps> = (props) => {
@@ -37,7 +38,7 @@ const PriceSummary: React.FC<PriceSummaryProps> = (props) => {
 
       <Item>
         <Text>Average</Text>
-        <Text size={600}>{average(props.prices).toLocaleString()} €</Text>
+        <Text size={600}>{average(props.prices, true).toLocaleString()} €</Text>
         <Text size={300}>
           ({average(props.pricesPerSqm).toLocaleString()} €/m
           <sup>2</sup>)
