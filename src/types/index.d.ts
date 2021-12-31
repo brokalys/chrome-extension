@@ -1,16 +1,17 @@
 export interface Classified {
   category: string;
   type: string;
-  rent_type: string;
-  price: string;
-  calc_price_per_sqm: string;
-  area: string;
-  rooms: string;
-  published_at: string;
+  rent_type: string | null;
+  price: number;
+  calc_price_per_sqm: number | null;
+  area: number | null;
+  rooms: number | null;
+  published_at: string | null;
 }
 
 export interface Building {
-  id: string;
+  id: number;
+  bounds: string;
 }
 
 export interface CrawledClassified {

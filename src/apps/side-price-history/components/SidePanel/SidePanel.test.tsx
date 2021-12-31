@@ -11,6 +11,7 @@ const defaultProps: SidePanelProps = {
   isOpen: true,
   isLoading: false,
   data: {
+    building: null,
     properties: [],
   },
   error: undefined,
@@ -32,7 +33,8 @@ describe('SidePanel', () => {
         data={{
           ...defaultProps.data,
           building: {
-            id: '123',
+            id: 123,
+            bounds: '',
           },
         }}
         pageClassified={{
@@ -58,7 +60,8 @@ describe('SidePanel', () => {
         data={{
           ...defaultProps.data,
           building: {
-            id: '123',
+            id: 123,
+            bounds: '',
           },
         }}
         pageClassified={{
@@ -131,13 +134,13 @@ describe('SidePanel', () => {
           properties: [
             {
               ...mockClassified,
-              price: '100',
+              price: 100,
               type: 'rent',
               rent_type: 'monthly',
             },
             {
               ...mockClassified,
-              price: '100',
+              price: 100,
               type: 'rent',
               rent_type: 'weekly',
             },

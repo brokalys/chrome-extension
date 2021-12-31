@@ -40,7 +40,7 @@ export interface SidePanelProps {
   isOpen: boolean;
   isLoading: boolean;
   data: {
-    building?: Building;
+    building: Building | null;
     properties: Classified[];
   };
   error: Error | undefined;

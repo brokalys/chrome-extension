@@ -46,7 +46,7 @@ const columns: Column<Classified>[] = [
     Cell: ({ row: { original } }) => (
       <>
         {original.price.toLocaleString()} €
-        {original.type === 'rent' && RENT_TYPE_SUFFIX[original.rent_type]}
+        {original.type === 'rent' && RENT_TYPE_SUFFIX[original.rent_type || '']}
       </>
     ),
     accessor: 'price',
@@ -60,7 +60,7 @@ const columns: Column<Classified>[] = [
 
       return (
         <>
-          {parseFloat(value).toLocaleString()} €/m
+          {value.toLocaleString()} €/m
           <sup>2</sup>
         </>
       );
