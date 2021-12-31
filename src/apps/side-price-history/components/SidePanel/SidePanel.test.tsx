@@ -157,4 +157,16 @@ describe('SidePanel', () => {
     expect(within(table).getByText('100 €/m')).toBeInTheDocument();
     expect(within(table).getByText('100 €/w')).toBeInTheDocument();
   });
+
+  it('clicking on the bug report button opens up the bug report modal', () => {
+    render(<SidePanel {...defaultProps} />);
+
+    userEvent.click(
+      screen.getByRole('button', {
+        name: 'Report a bug',
+      }),
+    );
+
+    expect(screen.getByText('Bug report')).toBeInTheDocument();
+  });
 });

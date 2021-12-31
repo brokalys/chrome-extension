@@ -1,6 +1,7 @@
 import {
   Button,
   Heading,
+  IssueIcon,
   Pane,
   SelectField,
   ShareIcon,
@@ -12,6 +13,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import type { Building, Classified, CrawledClassified } from 'src/types';
 
+import BugReportModal from '../BugReportModal';
 import PriceHistoryTable from '../PriceHistoryTable';
 import styles from './SidePanel.module.scss';
 
@@ -51,6 +53,7 @@ export interface SidePanelProps {
 function SidePanel(props: SidePanelProps) {
   const { building, properties } = props.data;
   const [filters, setFilter, tableFilters] = useFilters();
+  const [isOpenBugReportModal, setIsOpenBugReportModal] = useState(false);
 
   return (
     <SideSheet
@@ -63,6 +66,12 @@ function SidePanel(props: SidePanelProps) {
       }}
       width={900}
     >
+      {isOpenBugReportModal && (
+        <BugReportModal
+          onSubmitComplete={() => setIsOpenBugReportModal(false)}
+        />
+      )}
+
       <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white">
         <Pane padding={16} borderBottom="muted">
           <Pane float="right" display="flex" gap={minorScale(3)}>
@@ -88,9 +97,13 @@ function SidePanel(props: SidePanelProps) {
                 </Button>
               ))}
 
-            {/*<Button iconAfter={IssueIcon} intent="danger">
+            <Button
+              iconAfter={IssueIcon}
+              intent="danger"
+              onClick={() => setIsOpenBugReportModal(true)}
+            >
               Report a bug
-            </Button>*/}
+            </Button>
           </Pane>
 
           <Heading size={600}>Price history for this building</Heading>
