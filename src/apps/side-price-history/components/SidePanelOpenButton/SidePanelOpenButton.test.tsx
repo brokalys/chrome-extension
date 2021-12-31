@@ -21,7 +21,7 @@ describe('SidePanelOpenButton', () => {
       />,
     );
 
-    expect(screen.queryByText('2 results')).toBeInTheDocument();
+    expect(screen.getByText('2 results')).toBeInTheDocument();
   });
 
   it('shows the result count with singular language', () => {
@@ -29,7 +29,7 @@ describe('SidePanelOpenButton', () => {
       <SidePanelOpenButton {...defaultProps} results={[mockClassified]} />,
     );
 
-    expect(screen.queryByText('1 result')).toBeInTheDocument();
+    expect(screen.getByText('1 result')).toBeInTheDocument();
   });
 
   it('shows a loading indicator when the results are still loading', () => {
