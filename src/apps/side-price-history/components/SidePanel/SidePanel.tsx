@@ -1,7 +1,6 @@
 import {
   Button,
   Heading,
-  IssueIcon,
   Pane,
   SelectField,
   ShareIcon,
