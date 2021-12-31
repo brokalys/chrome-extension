@@ -1,15 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "Brokalys",
-  "description": "Real estate price historical comparison",
+  "name": "Brokalys: ss.lv historical prices",
+  "description": "Extends the ss.lv interface with historical price data for property classifieds.",
   "homepage_url": "https://brokalys.com",
   "version": "1.0.0",
   "icons": {
-    "512": "logo512.png"
+    "512": "favicon.png"
   },
   "action": {
-    "default_icon": "logo512.png",
-    "default_popup": "index.html"
+    "default_icon": "favicon.png"
   },
   "content_scripts": [
     {
@@ -18,5 +17,5 @@
       "run_at": "document_idle"
     }
   ],
-  "permissions": ["activeTab"]
+  "author": "Matiss Janis Aboltins <matiss@brokalys.com>"
 }

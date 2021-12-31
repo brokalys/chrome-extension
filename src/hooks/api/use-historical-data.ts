@@ -33,7 +33,7 @@ oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 /**
  * Retrieves the history and statistical data for a classified.
  */
-export default function useHistoricalData(lat, lng) {
+export default function useHistoricalData(lat: number, lng: number) {
   const { data, loading, error } = useQuery(GET_STATS, {
     variables: {
       lat,

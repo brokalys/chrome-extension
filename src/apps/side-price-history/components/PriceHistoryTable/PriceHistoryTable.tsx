@@ -1,19 +1,24 @@
+import type { Property } from 'csstype';
 import {
-  Pane,
-  Pagination,
-  Table,
-  SortDescIcon,
-  SortAscIcon,
-  Spinner,
-  minorScale,
   EmptyState,
+  ErrorIcon,
+  Pagination,
+  Pane,
   SearchIcon,
+  SortAscIcon,
+  SortDescIcon,
+  Spinner,
+  Table,
+  minorScale,
 } from 'evergreen-ui';
-import { useFilters, usePagination, useTable, useSortBy } from 'react-table';
 import moment from 'moment';
-import React from 'react';
+import { useEffect } from 'react';
+import { useFilters, usePagination, useSortBy, useTable } from 'react-table';
+import type { Cell, Column, Filters } from 'react-table';
 
-const RENT_TYPE_SUFFIX = {
+import type { Classified } from 'src/types';
+
+const RENT_TYPE_SUFFIX: Record<string, string> = {
   yearly: '/y',
   monthly: '/m',
   weekly: '/w',
@@ -21,7 +26,7 @@ const RENT_TYPE_SUFFIX = {
   hourly: '/h',
 };
 
-const columns = [
+const columns: Column<Classified>[] = [
   {
     Header: 'Category',
     accessor: 'category',
@@ -86,14 +91,10 @@ const columns = [
     Cell: ({ value }) =>
       value ? moment(value).format('YYYY-MM-DD HH:mm') : 'Before 2018',
     accessor: 'published_at',
-    width: 1000,
-    minWidth: 1000,
-    maxWidth: 1000,
-    flexBasis: 1000,
   },
 ];
 
-function getCellTextAlign(cell) {
+function getCellTextAlign(cell: Cell<Classified>): Property.TextAlign {
   if (['category', 'type'].includes(cell.column.id)) {
     return 'left';
   }
@@ -101,7 +102,7 @@ function getCellTextAlign(cell) {
   return 'right';
 }
 
-function getColumnFlexBasis(column) {
+function getColumnFlexBasis(column: Column<Classified>): number | undefined {
   switch (column.id) {
     case 'published_at':
     case 'calc_price_per_sqm':
@@ -112,7 +113,14 @@ function getColumnFlexBasis(column) {
   }
 }
 
-export default function PriceHistoryTable(props) {
+export interface PriceHistoryTableProps {
+  isLoading: boolean;
+  data: Classified[];
+  filters: Filters<Classified>;
+  error: Error | undefined;
+}
+
+export default function PriceHistoryTable(props: PriceHistoryTableProps) {
   const {
     headerGroups,
     page,
@@ -125,7 +133,7 @@ export default function PriceHistoryTable(props) {
     pageCount,
     gotoPage,
     state: { pageIndex },
-  } = useTable(
+  } = useTable<Classified>(
     {
       columns,
       data: props.data,
@@ -147,7 +155,7 @@ export default function PriceHistoryTable(props) {
     usePagination,
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     setAllFilters(props.filters);
   }, [props.filters, setAllFilters]);
 
@@ -155,7 +163,11 @@ export default function PriceHistoryTable(props) {
 
   return (
     <>
-      <Table>
+      <Table
+        data-testid="data-table"
+        aria-live="polite"
+        aria-busy={props.isLoading}
+      >
         {headerGroups.map((headerGroup) => (
           <Table.Head height={30} {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
@@ -186,6 +198,15 @@ export default function PriceHistoryTable(props) {
             >
               <Spinner />
             </Pane>
+          ) : props.error ? (
+            <EmptyState
+              background="light"
+              title="An error occurred"
+              orientation="horizontal"
+              icon={<ErrorIcon color="danger" />}
+              iconBgColor="#EDEFF5"
+              description="We are experiencing some problems. Try reloading the page. If that doesn't solve it, please click the bug report button above."
+            />
           ) : props.data.length === 0 ? (
             <EmptyState
               background="light"
