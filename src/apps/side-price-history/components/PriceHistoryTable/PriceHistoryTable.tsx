@@ -12,11 +12,13 @@ import {
   minorScale,
 } from 'evergreen-ui';
 import moment from 'moment';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useFilters, usePagination, useSortBy, useTable } from 'react-table';
 import type { Cell, Column, Filters } from 'react-table';
 
 import type { Classified } from 'src/types';
+
+import PriceSummary from '../PriceSummary';
 
 const RENT_TYPE_SUFFIX: Record<string, string> = {
   yearly: '/y',
@@ -122,14 +124,15 @@ export interface PriceHistoryTableProps {
 
 export default function PriceHistoryTable(props: PriceHistoryTableProps) {
   const {
+    rows,
     headerGroups,
-    page,
     prepareRow,
 
     // Filtering
     setAllFilters,
 
     // Pagination
+    page,
     pageCount,
     gotoPage,
     state: { pageIndex },
@@ -161,8 +164,22 @@ export default function PriceHistoryTable(props: PriceHistoryTableProps) {
 
   const hasResults = page.length > 0;
 
+  const prices = useMemo(
+    () => rows.map(({ values }) => values.price).filter((value) => !!value),
+    [rows],
+  );
+  const pricesPerSqm = useMemo(
+    () =>
+      rows
+        .map(({ values }) => values.calc_price_per_sqm)
+        .filter((value) => !!value),
+    [rows],
+  );
+
   return (
     <>
+      <PriceSummary prices={prices} pricesPerSqm={pricesPerSqm} />
+
       <Table
         data-testid="data-table"
         aria-live="polite"
