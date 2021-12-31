@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@apollo/client": "^3.3.15",
+    "@bugsnag/js": "^7.14.1",
+    "@bugsnag/plugin-react": "^7.14.0",
     "clean-deep": "^3.4.0",
     "evergreen-ui": "^6.6.3",
     "graphql": "^16.2.0",
