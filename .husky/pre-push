@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-CI=true yarn lint && yarn test && yarn build
+CI=true yarn test && yarn build
