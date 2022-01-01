@@ -128,9 +128,8 @@ function runCrawler(): CrawledClassified {
       price: parseInt(price || '', 10),
       price_per_sqm: (() => {
         try {
-          return parseInt(
+          return parseFloat(
             priceText.match(/\(([0-9\s.]+) €/)?.[1].replace(/\s/g, '') || '',
-            10,
           );
         } catch (e) {}
       })(),
@@ -163,6 +162,10 @@ function runCrawler(): CrawledClassified {
 
       rooms: (() => {
         try {
+          if (getElementText('#tdo_58')) {
+            return parseInt(getElementText('#tdo_58') || '', 10);
+          }
+
           return parseInt(getElementText('#tdo_1') || '', 10);
         } catch (e) {}
       })(),
@@ -185,15 +188,23 @@ function runCrawler(): CrawledClassified {
       floor: (() => {
         try {
           return parseInt(
-            getElementText('#tdo_4').match(/^([0-9]+)\/([0-9]+)$/)?.[1] || '',
+            getElementText('#tdo_4').match(/^([0-9]+)\/([0-9]+)/)?.[1] || '',
             10,
           );
         } catch (e) {}
       })(),
       max_floors: (() => {
         try {
+          if (getElementText('#tdo_57')) {
+            return parseInt(getElementText('#tdo_57'), 10);
+          }
+
+          if (getElementText('#tdo_5')) {
+            return parseInt(getElementText('#tdo_5'), 10);
+          }
+
           return parseInt(
-            getElementText('#tdo_4').match(/^([0-9]+)\/([0-9]+)$/)?.[2] || '',
+            getElementText('#tdo_4').match(/^([0-9]+)\/([0-9]+)/)?.[2] || '',
             10,
           );
         } catch (e) {}
@@ -204,23 +215,9 @@ function runCrawler(): CrawledClassified {
           const el = document
             .querySelector('#msg_div_msg')!
             .cloneNode(true) as HTMLElement;
-          el.querySelector('table')!.remove();
-          el.querySelector('table')!.remove();
+          el.querySelector('table')?.remove();
+          el.querySelector('table')?.remove();
           return el.textContent!.trim();
-        } catch (e) {}
-      })(),
-
-      contact_phone: getElementText('#ph_td_1'),
-      contact_phone2: getElementText('#ph_td_2'),
-      contact_company: (() => {
-        try {
-          return (
-            document
-              .querySelector('#usr_logo')!
-              .parentElement!.parentElement!.previousElementSibling!.querySelector(
-                '.ads_contacts',
-              )!.textContent || ''
-          );
         } catch (e) {}
       })(),
 
@@ -248,16 +245,22 @@ function runCrawler(): CrawledClassified {
       cadastre_number: getElementText('#tdo_1631'),
       land_area: (() => {
         try {
-          return parseInt(
-            getElementText('#tdo_60').match(/^([0-9]+) /)?.[1] || '',
-            10,
+          return parseFloat(
+            getElementText('#tdo_60').match(/^([0-9.]+) /)?.[1] || '',
           );
         } catch (e) {}
       })(),
       land_area_measurement: (() => {
         try {
           const area = getElementText('#tdo_60');
-          return area.endsWith('m²') ? 'm2' : undefined;
+
+          if (area.endsWith('m²') || area.endsWith('м²')) {
+            return 'm2';
+          }
+
+          if (area.endsWith('ha.') || area.endsWith('га.')) {
+            return 'ha';
+          }
         } catch (e) {}
       })(),
       published_at: document

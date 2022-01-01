@@ -38,9 +38,6 @@ export interface CrawledClassified {
   max_floors?: number;
 
   content?: string;
-  contact_phone?: string;
-  contact_phone2?: string;
-  contact_company?: string;
   building_project?: string;
   building_material?: string;
 

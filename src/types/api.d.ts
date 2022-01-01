@@ -34,7 +34,5 @@ export interface Building {
 }
 
 export interface GetStatsResponse {
-  point: {
-    buildings: Building[];
-  };
+  building: Building;
 }

@@ -15,16 +15,14 @@ describe('App', () => {
     render(<App />, { wrapper });
 
     expect(
-      screen.getByRole('button', { name: 'View price history 0 results' }),
+      screen.getByRole('button', { name: 'View price history' }),
     ).toBeInTheDocument();
   });
 
   it('clicking on the toggle button opens the side panel and hides open button', () => {
     render(<App />, { wrapper });
 
-    userEvent.click(
-      screen.getByRole('button', { name: 'View price history 0 results' }),
-    );
+    userEvent.click(screen.getByRole('button', { name: 'View price history' }));
 
     expect(
       screen.getByText('Price history for this building'),

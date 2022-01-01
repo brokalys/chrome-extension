@@ -1,29 +1,26 @@
 import { gql, useQuery } from '@apollo/client';
 
+import { CrawledClassified } from 'src/types';
 import { GetStatsResponse } from 'src/types/api';
 
+import useIdentifyBuilding from './use-identify-building';
+
 const GET_STATS = gql`
-  query ChromeExtension_GetState(
-    $lat: Float!
-    $lng: Float!
-    $filter: PropertyFilter
-  ) {
-    point(lat: $lat, lng: $lng) {
-      buildings {
-        id
-        bounds
-        properties(filter: $filter) {
-          results {
-            id
-            category
-            type
-            rent_type
-            price
-            calc_price_per_sqm
-            area
-            rooms
-            published_at
-          }
+  query ChromeExtension_GetState($buildingId: Int!, $filter: PropertyFilter) {
+    building(id: $buildingId) {
+      id
+      bounds
+      properties(filter: $filter) {
+        results {
+          id
+          category
+          type
+          rent_type
+          price
+          calc_price_per_sqm
+          area
+          rooms
+          published_at
         }
       }
     }
@@ -34,21 +31,25 @@ const oneWeekAgo = new Date();
 oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
 interface GetStatsVars {
-  lat: number;
-  lng: number;
+  buildingId: number;
   filter: Record<string, Record<string, any>>;
 }
 
 /**
  * Retrieves the history and statistical data for a classified.
  */
-export default function useHistoricalData(lat: number, lng: number) {
+export default function useHistoricalData(classified: CrawledClassified) {
+  const {
+    data: buildingId,
+    loading: buildingIdLoading,
+    error: buildingIdError,
+  } = useIdentifyBuilding(classified);
+
   const { data, loading, error } = useQuery<GetStatsResponse, GetStatsVars>(
     GET_STATS,
     {
       variables: {
-        lat,
-        lng,
+        buildingId: buildingId!,
         filter: {
           category: {
             in: ['apartment', 'house', 'office'],
@@ -61,22 +62,22 @@ export default function useHistoricalData(lat: number, lng: number) {
           },
         },
       },
-      skip: !lat || !lng,
+      skip: !buildingId,
     },
   );
 
   return {
     data: {
       building:
-        data && data.point.buildings.length > 0
+        data && data.building
           ? {
-              id: data.point.buildings[0].id,
-              bounds: data.point.buildings[0].bounds,
+              id: data.building.id,
+              bounds: data.building.bounds,
             }
           : null,
-      properties: data?.point.buildings[0]?.properties.results || [],
+      properties: data?.building?.properties.results || [],
     },
-    loading,
-    error,
+    loading: buildingIdLoading || loading,
+    error: buildingIdError || error,
   };
 }

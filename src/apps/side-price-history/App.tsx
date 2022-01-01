@@ -19,10 +19,8 @@ interface ContentProps {
   pageClassified: CrawledClassified;
 }
 
-function Content(props: ContentProps) {
-  const { lat, lng } = props.pageClassified;
-
-  const { loading, error, data } = useHistoricalData(lat!, lng!);
+const Content: React.FC<ContentProps> = ({ pageClassified }) => {
+  const { loading, error, data } = useHistoricalData(pageClassified);
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -40,11 +38,11 @@ function Content(props: ContentProps) {
         isLoading={loading}
         data={data}
         error={error}
-        pageClassified={props.pageClassified}
+        pageClassified={pageClassified}
         onCloseClick={() => setIsOpen(false)}
       />
     </>
   );
-}
+};
 
 export default App;
