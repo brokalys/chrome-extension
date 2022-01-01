@@ -11,7 +11,10 @@ import App from './App';
 const container = document.createElement('div');
 container.style.zIndex = '1000';
 container.style.position = 'absolute';
-document.body.appendChild(container);
+
+if (document.body.id !== 'skip-adding-apps') {
+  document.body.appendChild(container);
+}
 
 const ErrorBoundary = Bugsnag.getPlugin('react')!.createErrorBoundary(React);
 
