@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client';
 
+import apolloErrorHandler from 'src/lib/apollo-error-handler';
 import { CrawledClassified } from 'src/types';
 import { GetStatsResponse } from 'src/types/api';
 
@@ -63,6 +64,7 @@ export default function useHistoricalData(classified: CrawledClassified) {
         },
       },
       skip: !buildingId,
+      onError: apolloErrorHandler,
     },
   );
 

@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client';
 import { useEffect } from 'react';
 
+import apolloErrorHandler from 'src/lib/apollo-error-handler';
 import { CrawledClassified } from 'src/types';
 
 const IDENTIFY_BUILDING = gql`
@@ -97,6 +98,7 @@ export default function useIdentifyBuilding(variables: CrawledClassified) {
         ...variables,
         additional_data: JSON.stringify(variables.additional_data),
       },
+      onError: apolloErrorHandler,
     });
   }, [variables, mutateFunction]);
 
