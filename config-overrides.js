@@ -11,6 +11,7 @@ module.exports = {
     (config) => {
       config.output.filename = 'js/bundle.js';
       config.optimization.minimize = false;
+      config.ignoreWarnings = [/Failed to parse source map/];
       return config;
     },
     adjustStyleLoaders(({ use }) => {

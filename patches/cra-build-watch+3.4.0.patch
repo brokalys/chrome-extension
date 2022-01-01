@@ -1,0 +1,25 @@
+diff --git a/node_modules/cra-build-watch/scripts/index.js b/node_modules/cra-build-watch/scripts/index.js
+index 2231fc7..2b64616 100644
+--- a/node_modules/cra-build-watch/scripts/index.js
++++ b/node_modules/cra-build-watch/scripts/index.js
+@@ -71,6 +71,7 @@ const resolvedBuildPath = buildPath ? handleBuildPath(buildPath) : paths.appBuil
+ // update the paths in config
+ config.output.path = resolvedBuildPath;
+ config.output.publicPath = publicPath || '';
++config.ignoreWarnings = [/Failed to parse source map/];
+ 
+ // Grab output names from cli args, otherwise use some default naming.
+ const fileNameToUse = outputFilename || `js/bundle.js`;
+@@ -95,9 +96,9 @@ if (disableChunks) {
+ // update media path destination
+ if (major >= 4) {
+   const oneOfIndex = 1;
+-  config.module.rules[oneOfIndex].oneOf[0].options.name = `media/[name].[hash:8].[ext]`;
+-  config.module.rules[oneOfIndex].oneOf[1].options.name = `media/[name].[hash:8].[ext]`;
+-  config.module.rules[oneOfIndex].oneOf[8].options.name = `media/[name].[hash:8].[ext]`;
++  // config.module.rules[oneOfIndex].oneOf[0].options.name = `media/[name].[hash:8].[ext]`;
++  // config.module.rules[oneOfIndex].oneOf[1].options.name = `media/[name].[hash:8].[ext]`;
++  // config.module.rules[oneOfIndex].oneOf[8].options.name = `media/[name].[hash:8].[ext]`;
+ } else if (major >= 2) {
+   // 2.0.0 => 2
+   // 2.0.1 => 3
