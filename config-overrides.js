@@ -1,10 +1,12 @@
 const FileManagerPlugin = require('filemanager-webpack-plugin');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const {
   addWebpackPlugin,
   override,
   disableChunk,
   adjustStyleLoaders,
 } = require('customize-cra');
+const packageJson = require('./package.json');
 
 module.exports = {
   webpack: override(
@@ -33,6 +35,35 @@ module.exports = {
               },
             ],
           },
+        },
+      }),
+    ),
+    addWebpackPlugin(
+      new WebpackManifestPlugin({
+        generate(_, files) {
+          return {
+            manifest_version: 3,
+            name: 'Brokalys: ss.lv historical prices',
+            description: packageJson.description,
+            homepage_url: 'https://brokalys.com',
+            version: packageJson.version,
+            icons: {
+              512: 'favicon.png',
+            },
+            action: {
+              default_icon: 'favicon.png',
+            },
+            content_scripts: [
+              {
+                matches: ['https://www.ss.lv/msg/*/real-estate/*'],
+                js: files
+                  .filter(({ isInitial }) => isInitial)
+                  .map(({ path }) => path),
+                run_at: 'document_idle',
+              },
+            ],
+            author: packageJson.author,
+          };
         },
       }),
     ),
