@@ -161,6 +161,7 @@ function SidePanel(props: SidePanelProps) {
         <PriceHistoryTable
           isLoading={props.isLoading}
           data={properties}
+          pageClassified={props.pageClassified}
           filters={tableFilters}
           error={props.error}
         />

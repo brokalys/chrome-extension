@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
 import mockClassified from 'src/__test__/mock-classified';
+import mockPageClassified from 'src/__test__/mock-page-classified';
 
 import PriceHistoryTable from './PriceHistoryTable';
 import type { PriceHistoryTableProps } from './PriceHistoryTable';
@@ -10,6 +11,7 @@ const defaultProps: PriceHistoryTableProps = {
   data: [],
   filters: [],
   error: undefined,
+  pageClassified: mockPageClassified,
 };
 
 describe('PriceHistoryTable', () => {
@@ -66,6 +68,20 @@ describe('PriceHistoryTable', () => {
     );
 
     expect(screen.getByText('An error occurred')).toBeInTheDocument();
+  });
+
+  it('displays a no-results error for LAND type category classifieds', () => {
+    render(
+      <PriceHistoryTable
+        {...defaultProps}
+        pageClassified={{
+          ...mockPageClassified,
+          category: 'land',
+        }}
+      />,
+    );
+
+    expect(screen.getByText('Price history unavailable')).toBeInTheDocument();
   });
 
   it('displays no-results text when no results are found', () => {

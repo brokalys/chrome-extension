@@ -28,7 +28,7 @@ const Content: React.FC<ContentProps> = ({ pageClassified }) => {
       {!isOpen && (
         <SidePanelOpenButton
           isLoading={loading}
-          results={data.properties}
+          results={pageClassified.category === 'land' ? [] : data.properties}
           onOpenClick={() => setIsOpen(true)}
         />
       )}

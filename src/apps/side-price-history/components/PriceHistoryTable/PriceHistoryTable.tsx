@@ -16,7 +16,7 @@ import { useEffect, useMemo } from 'react';
 import { useFilters, usePagination, useSortBy, useTable } from 'react-table';
 import type { Cell, Column, Filters } from 'react-table';
 
-import type { Classified } from 'src/types';
+import type { Classified, CrawledClassified } from 'src/types';
 
 import PriceSummary from '../PriceSummary';
 
@@ -118,6 +118,7 @@ function getColumnFlexBasis(column: Column<Classified>): number | undefined {
 export interface PriceHistoryTableProps {
   isLoading: boolean;
   data: Classified[];
+  pageClassified: CrawledClassified;
   filters: Filters<Classified>;
   error: Error | undefined;
 }
@@ -223,6 +224,15 @@ export default function PriceHistoryTable(props: PriceHistoryTableProps) {
               icon={<ErrorIcon color="danger" />}
               iconBgColor="#EDEFF5"
               description="We are experiencing some problems. Try reloading the page. If that doesn't solve it, please click the bug report button above."
+            />
+          ) : props.pageClassified.category === 'land' ? (
+            <EmptyState
+              background="light"
+              title="Price history unavailable"
+              orientation="horizontal"
+              icon={<SearchIcon color="#C1C4D6" />}
+              iconBgColor="#EDEFF5"
+              description="Unfortunately LAND type classifieds currently do not have price history. Interested in this feature? Submit a feature request!"
             />
           ) : props.data.length === 0 ? (
             <EmptyState
