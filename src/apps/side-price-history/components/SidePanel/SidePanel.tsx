@@ -50,15 +50,21 @@ export interface SidePanelProps {
   onCloseClick: () => void;
 }
 
-function SidePanel(props: SidePanelProps) {
-  const { building, properties } = props.data;
+const SidePanel: React.FC<SidePanelProps> = ({
+  isOpen,
+  isLoading,
+  data: { building, properties },
+  error,
+  pageClassified,
+  onCloseClick,
+}) => {
   const [filters, setFilter, tableFilters] = useFilters();
   const [isOpenBugReportModal, setIsOpenBugReportModal] = useState(false);
 
   return (
     <SideSheet
-      isShown={props.isOpen}
-      onCloseComplete={props.onCloseClick}
+      isShown={isOpen}
+      onCloseComplete={onCloseClick}
       containerProps={{
         display: 'flex',
         flex: '1',
@@ -75,13 +81,13 @@ function SidePanel(props: SidePanelProps) {
       <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white">
         <Pane padding={16} borderBottom="muted">
           <Pane float="right" display="flex" gap={minorScale(3)}>
-            {props.pageClassified.lat &&
-              props.pageClassified.lng &&
+            {pageClassified.lat &&
+              pageClassified.lng &&
               (building ? (
                 <Button
                   iconAfter={ShareIcon}
                   is="a"
-                  href={`https://map.brokalys.com/#/${props.pageClassified.lat},${props.pageClassified.lng},18/building/${building.id}`}
+                  href={`https://map.brokalys.com/#/${pageClassified.lat},${pageClassified.lng},18/building/${building.id}`}
                   target="_blank"
                 >
                   View more data
@@ -90,7 +96,7 @@ function SidePanel(props: SidePanelProps) {
                 <Button
                   iconAfter={ShareIcon}
                   is="a"
-                  href={`https://map.brokalys.com/#/${props.pageClassified.lat},${props.pageClassified.lng},18`}
+                  href={`https://map.brokalys.com/#/${pageClassified.lat},${pageClassified.lng},18`}
                   target="_blank"
                 >
                   View on Brokalys map
@@ -159,15 +165,15 @@ function SidePanel(props: SidePanelProps) {
       </Pane>
       <Pane flex="1" overflowY="scroll" background="tint1" padding={16}>
         <PriceHistoryTable
-          isLoading={props.isLoading}
+          isLoading={isLoading}
           data={properties}
-          pageClassified={props.pageClassified}
+          pageClassified={pageClassified}
           filters={tableFilters}
-          error={props.error}
+          error={error}
         />
       </Pane>
     </SideSheet>
   );
-}
+};
 
 export default SidePanel;

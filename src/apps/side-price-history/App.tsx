@@ -7,13 +7,13 @@ import type { CrawledClassified } from 'src/types';
 import SidePanel from './components/SidePanel';
 import SidePanelOpenButton from './components/SidePanelOpenButton';
 
-function App() {
+const App: React.FC = () => {
   const { data, loading } = usePageClassified();
 
   if (loading || !data) return null;
 
   return <Content pageClassified={data} />;
-}
+};
 
 interface ContentProps {
   pageClassified: CrawledClassified;

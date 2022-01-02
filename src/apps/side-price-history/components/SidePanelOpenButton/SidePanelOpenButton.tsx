@@ -9,12 +9,16 @@ export interface SidePanelOpenButtonProps {
   onOpenClick: () => void;
 }
 
-function SidePanelOpenButton(props: SidePanelOpenButtonProps) {
-  const resultCount = props.results.length;
+const SidePanelOpenButton: React.FC<SidePanelOpenButtonProps> = ({
+  isLoading,
+  results,
+  onOpenClick,
+}) => {
+  const resultCount = results.length;
 
   return (
     <Pane elevation={4} position="fixed" bottom={20} right={20}>
-      <Button height={56} appearance="primary" onClick={props.onOpenClick}>
+      <Button height={56} appearance="primary" onClick={onOpenClick}>
         View price history
         <Pill
           display="inline-flex"
@@ -22,10 +26,10 @@ function SidePanelOpenButton(props: SidePanelOpenButtonProps) {
           color="blue"
           isInteractive
           aria-live="polite"
-          aria-busy={props.isLoading}
+          aria-busy={isLoading}
           data-testid="result-count-pill"
         >
-          {props.isLoading ? (
+          {isLoading ? (
             <Spinner size={16} />
           ) : (
             `${resultCount} ${pluralize('results', resultCount)}`
@@ -34,6 +38,6 @@ function SidePanelOpenButton(props: SidePanelOpenButtonProps) {
       </Button>
     </Pane>
   );
-}
+};
 
 export default SidePanelOpenButton;

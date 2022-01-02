@@ -123,7 +123,13 @@ export interface PriceHistoryTableProps {
   error: Error | undefined;
 }
 
-export default function PriceHistoryTable(props: PriceHistoryTableProps) {
+const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
+  isLoading,
+  data,
+  pageClassified,
+  filters,
+  error,
+}) => {
   const {
     rows,
     headerGroups,
@@ -140,7 +146,7 @@ export default function PriceHistoryTable(props: PriceHistoryTableProps) {
   } = useTable<Classified>(
     {
       columns,
-      data: props.data,
+      data,
       initialState: {
         sortBy: [
           {
@@ -160,8 +166,8 @@ export default function PriceHistoryTable(props: PriceHistoryTableProps) {
   );
 
   useEffect(() => {
-    setAllFilters(props.filters);
-  }, [props.filters, setAllFilters]);
+    setAllFilters(filters);
+  }, [filters, setAllFilters]);
 
   const hasResults = page.length > 0;
 
@@ -181,11 +187,7 @@ export default function PriceHistoryTable(props: PriceHistoryTableProps) {
     <>
       <PriceSummary prices={prices} pricesPerSqm={pricesPerSqm} />
 
-      <Table
-        data-testid="data-table"
-        aria-live="polite"
-        aria-busy={props.isLoading}
-      >
+      <Table data-testid="data-table" aria-live="polite" aria-busy={isLoading}>
         {headerGroups.map((headerGroup) => (
           <Table.Head height={30} {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
@@ -206,7 +208,7 @@ export default function PriceHistoryTable(props: PriceHistoryTableProps) {
         ))}
 
         <Table.Body>
-          {props.isLoading ? (
+          {isLoading ? (
             <Pane
               backgroundColor="white"
               display="flex"
@@ -216,7 +218,7 @@ export default function PriceHistoryTable(props: PriceHistoryTableProps) {
             >
               <Spinner />
             </Pane>
-          ) : props.error ? (
+          ) : error ? (
             <EmptyState
               background="light"
               title="An error occurred"
@@ -225,7 +227,7 @@ export default function PriceHistoryTable(props: PriceHistoryTableProps) {
               iconBgColor="#EDEFF5"
               description="We are experiencing some problems. Try reloading the page. If that doesn't solve it, please click the bug report button above."
             />
-          ) : props.pageClassified.category === 'land' ? (
+          ) : pageClassified.category === 'land' ? (
             <EmptyState
               background="light"
               title="Price history unavailable"
@@ -234,7 +236,7 @@ export default function PriceHistoryTable(props: PriceHistoryTableProps) {
               iconBgColor="#EDEFF5"
               description="Unfortunately LAND type classifieds currently do not have price history. Interested in this feature? Submit a feature request!"
             />
-          ) : props.data.length === 0 ? (
+          ) : data.length === 0 ? (
             <EmptyState
               background="light"
               title="No price history found"
@@ -282,4 +284,6 @@ export default function PriceHistoryTable(props: PriceHistoryTableProps) {
       )}
     </>
   );
-}
+};
+
+export default PriceHistoryTable;

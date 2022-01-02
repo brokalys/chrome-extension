@@ -12,8 +12,11 @@ function average(dataPoints: number[], round: boolean = false): number {
   return round ? Math.round(avg) : parseFloat(avg.toFixed(2));
 }
 
-const PriceSummary: React.FC<PriceSummaryProps> = (props) => {
-  if (props.prices.length === 0) {
+const PriceSummary: React.FC<PriceSummaryProps> = ({
+  prices,
+  pricesPerSqm,
+}) => {
+  if (prices.length === 0) {
     return null;
   }
 
@@ -28,19 +31,19 @@ const PriceSummary: React.FC<PriceSummaryProps> = (props) => {
       <Item>
         <Text>Min</Text>
         <Text size={600}>
-          {Math.min.apply(this, props.prices).toLocaleString()} €
+          {Math.min.apply(this, prices).toLocaleString()} €
         </Text>
         <Text size={300}>
-          ({Math.min.apply(this, props.pricesPerSqm).toLocaleString()} €/m
+          ({Math.min.apply(this, pricesPerSqm).toLocaleString()} €/m
           <sup>2</sup>)
         </Text>
       </Item>
 
       <Item>
         <Text>Average</Text>
-        <Text size={600}>{average(props.prices, true).toLocaleString()} €</Text>
+        <Text size={600}>{average(prices, true).toLocaleString()} €</Text>
         <Text size={300}>
-          ({average(props.pricesPerSqm).toLocaleString()} €/m
+          ({average(pricesPerSqm).toLocaleString()} €/m
           <sup>2</sup>)
         </Text>
       </Item>
@@ -48,10 +51,10 @@ const PriceSummary: React.FC<PriceSummaryProps> = (props) => {
       <Item>
         <Text>Max</Text>
         <Text size={600}>
-          {Math.max.apply(this, props.prices).toLocaleString()} €
+          {Math.max.apply(this, prices).toLocaleString()} €
         </Text>
         <Text size={300}>
-          ({Math.max.apply(this, props.pricesPerSqm).toLocaleString()} €/m
+          ({Math.max.apply(this, pricesPerSqm).toLocaleString()} €/m
           <sup>2</sup>)
         </Text>
       </Item>
@@ -59,7 +62,7 @@ const PriceSummary: React.FC<PriceSummaryProps> = (props) => {
   );
 };
 
-const Item: React.FC = (props) => {
+const Item: React.FC = ({ children }) => {
   return (
     <Pane
       elevation={0}
@@ -70,7 +73,7 @@ const Item: React.FC = (props) => {
       alignItems="center"
       flexDirection="column"
     >
-      {props.children}
+      {children}
     </Pane>
   );
 };
