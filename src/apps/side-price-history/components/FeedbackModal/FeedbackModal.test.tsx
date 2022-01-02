@@ -2,17 +2,17 @@ import Bugsnag from '@bugsnag/js';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import BugReportModal from './BugReportModal';
-import type { BugReportModalProps } from './BugReportModal';
+import FeedbackModal from './FeedbackModal';
+import type { FeedbackModalProps } from './FeedbackModal';
 
 jest.mock('@bugsnag/js');
 
-const defaultProps: BugReportModalProps = {
+const defaultProps: FeedbackModalProps = {
   intent: 'bug',
   onSubmitComplete: jest.fn(),
 };
 
-describe('BugReportModal', () => {
+describe('FeedbackModal', () => {
   beforeEach(() => {
     (Bugsnag.notify as jest.Mock).mockImplementation((_err, _, callback) =>
       callback(),
@@ -20,7 +20,7 @@ describe('BugReportModal', () => {
   });
 
   it('displays the description and email fields', () => {
-    render(<BugReportModal {...defaultProps} />);
+    render(<FeedbackModal {...defaultProps} />);
 
     expect(
       screen.getByPlaceholderText('Problem description'),
@@ -31,7 +31,7 @@ describe('BugReportModal', () => {
   it('clicking the "Submit" button dispatches the bugsnag action and triggers the callback', () => {
     const onSubmitComplete = jest.fn();
     render(
-      <BugReportModal {...defaultProps} onSubmitComplete={onSubmitComplete} />,
+      <FeedbackModal {...defaultProps} onSubmitComplete={onSubmitComplete} />,
     );
 
     userEvent.click(screen.getByRole('button', { name: 'Submit' }));

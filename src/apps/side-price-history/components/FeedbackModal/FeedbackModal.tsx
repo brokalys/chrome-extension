@@ -17,12 +17,12 @@ const LABELS = {
   },
 };
 
-export interface BugReportModalProps {
+export interface FeedbackModalProps {
   intent?: 'bug' | 'default';
   onSubmitComplete: () => void;
 }
 
-const BugReportModal: React.FC<BugReportModalProps> = ({
+const FeedbackModal: React.FC<FeedbackModalProps> = ({
   intent = 'default',
   onSubmitComplete,
 }) => {
@@ -78,4 +78,4 @@ const BugReportModal: React.FC<BugReportModalProps> = ({
   );
 };
 
-export default BugReportModal;
+export default FeedbackModal;

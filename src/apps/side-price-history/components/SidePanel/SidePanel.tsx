@@ -14,7 +14,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import type { Building, Classified, CrawledClassified } from 'src/types';
 
-import BugReportModal from '../BugReportModal';
+import FeedbackModal from '../FeedbackModal';
 import PriceHistoryTable from '../PriceHistoryTable';
 import styles from './SidePanel.module.scss';
 
@@ -103,7 +103,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
       width={900}
     >
       {isOpenFeedbackModal && (
-        <BugReportModal
+        <FeedbackModal
           intent={feedbackModalIntent}
           onSubmitComplete={closeFeedbackModal}
         />
