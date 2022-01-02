@@ -185,7 +185,9 @@ const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
 
   return (
     <>
-      <PriceSummary prices={prices} pricesPerSqm={pricesPerSqm} />
+      {pageClassified.category !== 'land' && (
+        <PriceSummary prices={prices} pricesPerSqm={pricesPerSqm} />
+      )}
 
       <Table data-testid="data-table" aria-live="polite" aria-busy={isLoading}>
         {headerGroups.map((headerGroup) => (
