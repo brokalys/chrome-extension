@@ -1,8 +1,9 @@
 import removeEmpty from 'clean-deep';
+import { isEqual } from 'lodash';
 
 import type { CrawledClassified } from 'src/types';
 
-function runCrawler(): CrawledClassified {
+function runCrawler(): CrawledClassified | undefined {
   let category;
   switch (document.querySelector('.headtitle a')?.textContent) {
     case 'Dzīvokļi':
@@ -277,6 +278,10 @@ function runCrawler(): CrawledClassified {
     },
     { NaNValues: true },
   );
+
+  if (isEqual(Object.keys(data), ['source', 'url', 'category', 'type'])) {
+    return;
+  }
 
   return data;
 }

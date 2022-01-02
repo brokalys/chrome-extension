@@ -5,6 +5,12 @@ import userEvent from '@testing-library/user-event';
 
 import App from './App';
 
+jest.mock('src/lib/crawlers/ss-lv', () => () => ({
+  category: 'apartment',
+  type: 'sell',
+  price: 10000,
+}));
+
 const mocks: MockedResponse[] = [];
 const wrapper: React.FC = ({ children }) => (
   <MockedProvider mocks={mocks} children={children} />
