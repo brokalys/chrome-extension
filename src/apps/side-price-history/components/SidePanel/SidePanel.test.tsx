@@ -169,4 +169,16 @@ describe('SidePanel', () => {
 
     expect(screen.getByText('Bug report')).toBeInTheDocument();
   });
+
+  it('clicking on the feedback button opens up the feedback modal', () => {
+    render(<SidePanel {...defaultProps} />);
+
+    userEvent.click(
+      screen.getByRole('button', {
+        name: 'Suggest a feature',
+      }),
+    );
+
+    expect(screen.getByText('Feedback')).toBeInTheDocument();
+  });
 });

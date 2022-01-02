@@ -1,12 +1,29 @@
 import Bugsnag from '@bugsnag/js';
-import { Dialog, TextInputField, TextareaField } from 'evergreen-ui';
+import { Dialog, TextInputField, TextareaField, toaster } from 'evergreen-ui';
 import React, { useCallback, useState } from 'react';
 
+const LABELS = {
+  TITLE: {
+    bug: 'Bug report',
+    default: 'Feedback',
+  },
+  DESCRIPTION_LABEL: {
+    bug: 'Problem description',
+    default: 'Feature/suggestion description',
+  },
+  DESCRIPTION_DESCRIPTION: {
+    bug: 'What problem are you experiencing? Is there something that could be improved?',
+    default: undefined,
+  },
+};
+
 export interface BugReportModalProps {
+  intent?: 'bug' | 'default';
   onSubmitComplete: () => void;
 }
 
 const BugReportModal: React.FC<BugReportModalProps> = ({
+  intent = 'default',
   onSubmitComplete,
 }) => {
   const [description, setDescription] = useState('');
@@ -16,31 +33,32 @@ const BugReportModal: React.FC<BugReportModalProps> = ({
   const onSubmit = useCallback(() => {
     setIsLoading(true);
     Bugsnag.notify(
-      new Error('new bug report'),
+      new Error('new feedback submission'),
       (event) => {
-        event.addMetadata('report', { description, email });
+        event.addMetadata('report', { intent, description, email });
       },
       () => {
         setIsLoading(false);
         onSubmitComplete();
+        toaster.success('Thank you for your report!');
       },
     );
-  }, [description, email, setIsLoading, onSubmitComplete]);
+  }, [intent, description, email, setIsLoading, onSubmitComplete]);
 
   return (
     <Dialog
       isShown
-      title="Bug report"
-      confirmLabel="Report"
+      title={LABELS.TITLE[intent]}
+      confirmLabel="Submit"
       onConfirm={onSubmit}
       isConfirmLoading={isLoading}
     >
       <TextareaField
-        label="Problem description"
-        description="What problem are you experiencing? Is there something that could be improved?"
+        label={LABELS.DESCRIPTION_LABEL[intent]}
+        description={LABELS.DESCRIPTION_DESCRIPTION[intent]}
         hint="Describe in as much detail as possible."
         required
-        placeholder="Problem description"
+        placeholder={LABELS.DESCRIPTION_LABEL[intent]}
         value={description}
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
           setDescription(e.target.value)

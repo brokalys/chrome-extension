@@ -8,6 +8,7 @@ import type { BugReportModalProps } from './BugReportModal';
 jest.mock('@bugsnag/js');
 
 const defaultProps: BugReportModalProps = {
+  intent: 'bug',
   onSubmitComplete: jest.fn(),
 };
 
@@ -27,13 +28,13 @@ describe('BugReportModal', () => {
     expect(screen.getByLabelText('Your email')).toBeInTheDocument();
   });
 
-  it('clicking the "report" button dispatches the bugsnag action and triggers the callback', () => {
+  it('clicking the "Submit" button dispatches the bugsnag action and triggers the callback', () => {
     const onSubmitComplete = jest.fn();
     render(
       <BugReportModal {...defaultProps} onSubmitComplete={onSubmitComplete} />,
     );
 
-    userEvent.click(screen.getByRole('button', { name: 'Report' }));
+    userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
     expect(onSubmitComplete).toBeCalled();
     expect(Bugsnag.notify).toBeCalled();
