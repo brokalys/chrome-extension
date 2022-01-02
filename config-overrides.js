@@ -55,7 +55,10 @@ module.exports = {
             },
             content_scripts: [
               {
-                matches: ['https://www.ss.lv/msg/*/real-estate/*'],
+                matches: [
+                  'https://www.ss.lv/msg/*/real-estate/*',
+                  'https://www.ss.com/msg/*/real-estate/*',
+                ],
                 js: files
                   .filter(({ isInitial }) => isInitial)
                   .map(({ path }) => path),
