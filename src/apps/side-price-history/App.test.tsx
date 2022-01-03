@@ -5,10 +5,13 @@ import userEvent from '@testing-library/user-event';
 
 import App from './App';
 
-jest.mock('src/lib/crawlers/ss-lv', () => () => ({
-  category: 'apartment',
-  type: 'sell',
-  price: 10000,
+jest.mock('src/hooks/use-page-classified', () => () => ({
+  data: {
+    category: 'apartment',
+    type: 'sell',
+    price: 10000,
+  },
+  loading: false,
 }));
 
 const mocks: MockedResponse[] = [];
