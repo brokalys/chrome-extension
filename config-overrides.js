@@ -58,6 +58,8 @@ module.exports = {
                 matches: [
                   'https://www.ss.lv/msg/*/real-estate/*',
                   'https://www.ss.com/msg/*/real-estate/*',
+                  'https://www.city24.lv/real-estate/*',
+                  'https://www.city24.lv/*/real-estate/*',
                 ],
                 js: files
                   .filter(({ isInitial }) => isInitial)
