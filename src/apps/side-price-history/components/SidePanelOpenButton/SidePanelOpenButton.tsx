@@ -18,7 +18,12 @@ const SidePanelOpenButton: React.FC<SidePanelOpenButtonProps> = ({
 
   return (
     <Pane elevation={4} position="fixed" bottom={20} right={20}>
-      <Button height={56} appearance="primary" onClick={onOpenClick}>
+      <Button
+        id="view-brokalys-price-history"
+        height={56}
+        appearance="primary"
+        onClick={onOpenClick}
+      >
         View price history
         <Pill
           display="inline-flex"
