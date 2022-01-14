@@ -1,6 +1,12 @@
-import Bugsnag from '@bugsnag/js';
-import { Dialog, TextInputField, TextareaField, toaster } from 'evergreen-ui';
-import React, { useCallback, useState } from 'react';
+import { gql, useMutation } from '@apollo/client';
+import {
+  Alert,
+  Dialog,
+  TextInputField,
+  TextareaField,
+  toaster,
+} from 'evergreen-ui';
+import React, { useState } from 'react';
 
 const LABELS = {
   TITLE: {
@@ -17,6 +23,16 @@ const LABELS = {
   },
 };
 
+export const SUBMIT_FEEDBACK = gql`
+  mutation ChromeExtension_SubmitFeedback(
+    $intent: String!
+    $description: String!
+    $email: String
+  ) {
+    submitFeedback(type: $intent, message: $description, email: $email)
+  }
+`;
+
 export interface FeedbackModalProps {
   intent?: 'bug' | 'default';
   onSubmitComplete: () => void;
@@ -28,31 +44,33 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
 }) => {
   const [description, setDescription] = useState('');
   const [email, setEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = useCallback(() => {
-    setIsLoading(true);
-    Bugsnag.notify(
-      new Error('new feedback submission'),
-      (event) => {
-        event.addMetadata('report', { intent, description, email });
-      },
-      () => {
-        setIsLoading(false);
-        onSubmitComplete();
-        toaster.success('Thank you for your report!');
-      },
-    );
-  }, [intent, description, email, setIsLoading, onSubmitComplete]);
+  const [onSubmit, { loading, error }] = useMutation(SUBMIT_FEEDBACK);
 
   return (
     <Dialog
       isShown
       title={LABELS.TITLE[intent]}
       confirmLabel="Submit"
-      onConfirm={onSubmit}
-      isConfirmLoading={isLoading}
+      onConfirm={() => {
+        onSubmit({
+          variables: { intent, description, email },
+          onCompleted: () => {
+            onSubmitComplete();
+            toaster.success('Thank you for your report!');
+          },
+        });
+      }}
+      isConfirmLoading={loading}
     >
+      {error && (
+        <Alert
+          intent="danger"
+          title="Failed submitting the report. Please try again later."
+          marginBottom={32}
+        />
+      )}
+
       <TextareaField
         label={LABELS.DESCRIPTION_LABEL[intent]}
         description={LABELS.DESCRIPTION_DESCRIPTION[intent]}

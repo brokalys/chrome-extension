@@ -1,8 +1,9 @@
-import Bugsnag from '@bugsnag/js';
-import { render, screen } from '@testing-library/react';
+import { MockedProvider } from '@apollo/client/testing';
+import type { MockedResponse } from '@apollo/client/testing';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import FeedbackModal from './FeedbackModal';
+import FeedbackModal, { SUBMIT_FEEDBACK } from './FeedbackModal';
 import type { FeedbackModalProps } from './FeedbackModal';
 
 jest.mock('@bugsnag/js');
@@ -12,15 +13,22 @@ const defaultProps: FeedbackModalProps = {
   onSubmitComplete: jest.fn(),
 };
 
-describe('FeedbackModal', () => {
-  beforeEach(() => {
-    (Bugsnag.notify as jest.Mock).mockImplementation((_err, _, callback) =>
-      callback(),
-    );
-  });
+const mocks: MockedResponse[] = [
+  {
+    request: {
+      query: SUBMIT_FEEDBACK,
+      variables: { type: 'bug', message: 'My Problem!' },
+    },
+    result: { data: { submitFeedback: true } },
+  },
+];
+const wrapper: React.FC = ({ children }) => (
+  <MockedProvider mocks={mocks} children={children} />
+);
 
+describe('FeedbackModal', () => {
   it('displays the description and email fields', () => {
-    render(<FeedbackModal {...defaultProps} />);
+    render(<FeedbackModal {...defaultProps} />, { wrapper });
 
     expect(
       screen.getByPlaceholderText('Problem description'),
@@ -32,11 +40,15 @@ describe('FeedbackModal', () => {
     const onSubmitComplete = jest.fn();
     render(
       <FeedbackModal {...defaultProps} onSubmitComplete={onSubmitComplete} />,
+      { wrapper },
     );
 
+    userEvent.type(
+      screen.getByPlaceholderText('Problem description'),
+      'My Problem!',
+    );
     userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    expect(onSubmitComplete).toBeCalled();
-    expect(Bugsnag.notify).toBeCalled();
+    waitFor(() => expect(onSubmitComplete).toBeCalled());
   });
 });

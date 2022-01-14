@@ -1,3 +1,5 @@
+import { MockedProvider } from '@apollo/client/testing';
+import type { MockedResponse } from '@apollo/client/testing';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -18,6 +20,11 @@ const defaultProps: SidePanelProps = {
   pageClassified: mockPageClassified,
   onCloseClick: jest.fn(),
 };
+
+const mocks: MockedResponse[] = [];
+const wrapper: React.FC = ({ children }) => (
+  <MockedProvider mocks={mocks} children={children} />
+);
 
 describe('SidePanel', () => {
   it('displays the results table', () => {
@@ -159,7 +166,7 @@ describe('SidePanel', () => {
   });
 
   it('clicking on the bug report button opens up the bug report modal', () => {
-    render(<SidePanel {...defaultProps} />);
+    render(<SidePanel {...defaultProps} />, { wrapper });
 
     userEvent.click(
       screen.getByRole('button', {
@@ -171,7 +178,7 @@ describe('SidePanel', () => {
   });
 
   it('clicking on the feedback button opens up the feedback modal', () => {
-    render(<SidePanel {...defaultProps} />);
+    render(<SidePanel {...defaultProps} />, { wrapper });
 
     userEvent.click(
       screen.getByRole('button', {
