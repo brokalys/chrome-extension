@@ -17,7 +17,11 @@ const mocks: MockedResponse[] = [
   {
     request: {
       query: SUBMIT_FEEDBACK,
-      variables: { type: 'bug', message: 'My Problem!' },
+      variables: {
+        type: 'bug',
+        message: 'My Problem!',
+        email: '',
+      },
     },
     result: { data: { submitFeedback: true } },
   },
@@ -36,7 +40,7 @@ describe('FeedbackModal', () => {
     expect(screen.getByLabelText('Your email')).toBeInTheDocument();
   });
 
-  it('clicking the "Submit" button dispatches the bugsnag action and triggers the callback', () => {
+  it('clicking the "Submit" button dispatches the bugsnag action and triggers the callback', async () => {
     const onSubmitComplete = jest.fn();
     render(
       <FeedbackModal {...defaultProps} onSubmitComplete={onSubmitComplete} />,
@@ -49,6 +53,6 @@ describe('FeedbackModal', () => {
     );
     userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    waitFor(() => expect(onSubmitComplete).toBeCalled());
+    await waitFor(() => expect(onSubmitComplete).toBeCalled());
   });
 });

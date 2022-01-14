@@ -25,11 +25,11 @@ const LABELS = {
 
 export const SUBMIT_FEEDBACK = gql`
   mutation ChromeExtension_SubmitFeedback(
-    $intent: String!
-    $description: String!
+    $type: String!
+    $message: String!
     $email: String
   ) {
-    submitFeedback(type: $intent, message: $description, email: $email)
+    submitFeedback(type: $type, message: $message, email: $email)
   }
 `;
 
@@ -54,7 +54,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
       confirmLabel="Submit"
       onConfirm={() => {
         onSubmit({
-          variables: { intent, description, email },
+          variables: { type: intent, message: description, email },
           onCompleted: () => {
             onSubmitComplete();
             toaster.success('Thank you for your report!');
