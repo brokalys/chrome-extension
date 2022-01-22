@@ -33,7 +33,7 @@ describe('SidePanel', () => {
     expect(screen.getByTestId('data-table')).toBeInTheDocument();
   });
 
-  it('displays a map.brokalys.com link button', () => {
+  it('displays a brokalys.com link button', () => {
     render(
       <SidePanel
         {...defaultProps}
@@ -56,11 +56,11 @@ describe('SidePanel', () => {
       screen.getByRole('link', { name: 'View more data' }),
     ).toHaveAttribute(
       'href',
-      'https://map.brokalys.com/#/56.241,24.98134,18/building/123',
+      'https://brokalys.com/#/56.241,24.98134,18/building/123',
     );
   });
 
-  it('does not display a map.brokalys.com link button when lat is not set', () => {
+  it('does not display a brokalys.com link button when lat is not set', () => {
     render(
       <SidePanel
         {...defaultProps}

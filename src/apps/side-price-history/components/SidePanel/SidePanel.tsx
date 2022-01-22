@@ -188,7 +188,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                 <Button
                   iconAfter={ShareIcon}
                   is="a"
-                  href={`https://map.brokalys.com/#/${pageClassified.lat},${pageClassified.lng},18/building/${building.id}`}
+                  href={`https://brokalys.com/#/${pageClassified.lat},${pageClassified.lng},18/building/${building.id}`}
                   target="_blank"
                 >
                   View more data
@@ -197,7 +197,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                 <Button
                   iconAfter={ShareIcon}
                   is="a"
-                  href={`https://map.brokalys.com/#/${pageClassified.lat},${pageClassified.lng},18`}
+                  href={`https://brokalys.com/#/${pageClassified.lat},${pageClassified.lng},18`}
                   target="_blank"
                 >
                   View on Brokalys map
