@@ -218,7 +218,12 @@ const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
   );
 
   return (
-    <>
+    <Pane
+      display="flex"
+      justifyContent="center"
+      flexDirection="column"
+      gap={12}
+    >
       {pageClassified.category !== 'land' && (
         <PriceSummary prices={prices} pricesPerSqm={pricesPerSqm} />
       )}
@@ -319,7 +324,7 @@ const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
           onPageChange={(pageNum) => gotoPage(pageNum - 1)}
         />
       )}
-    </>
+    </Pane>
   );
 };
 
