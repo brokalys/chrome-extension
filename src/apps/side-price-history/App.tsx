@@ -39,7 +39,7 @@ const Content: React.FC<ContentProps> = ({ pageClassified }) => {
       })) || []),
       ...(data.vzd?.premises.map((row) => ({
         ...row,
-        category: 'office',
+        category: 'premise',
         type: 'sell',
         calc_price_per_sqm: row.area ? row.price / row.area : null,
         source: RESULT_REAL_SALE,

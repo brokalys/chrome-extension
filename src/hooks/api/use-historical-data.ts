@@ -102,7 +102,15 @@ export default function useHistoricalData(classified: CrawledClassified) {
               bounds: data.building.bounds,
             }
           : null,
-      properties: data?.building?.properties.results || [],
+      properties: (data?.building?.properties.results || []).map((row) => {
+        if (['office'].includes(row.type)) {
+          return {
+            ...row,
+            type: 'premise',
+          };
+        }
+        return row;
+      }),
       vzd: data?.building?.vzd,
     },
     loading: buildingIdLoading || loading,

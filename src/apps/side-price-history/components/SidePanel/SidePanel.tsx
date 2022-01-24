@@ -168,7 +168,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
               <option value="">All categories</option>
               <option value="apartment">Apartment</option>
               <option value="house">House</option>
-              <option value="office">Premises</option>
+              <option value="premise">Premise</option>
             </SelectField>
 
             {filters.source !== RESULT_REAL_SALE && (
