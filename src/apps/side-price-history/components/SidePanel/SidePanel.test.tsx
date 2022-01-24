@@ -51,7 +51,7 @@ describe('SidePanel', () => {
       screen.getByRole('link', { name: 'View more data' }),
     ).toHaveAttribute(
       'href',
-      'https://brokalys.com/#/56.241,24.98134,18/building/123',
+      'https://brokalys.com/#/56.241,24.98134,18/building/123?ref=extension',
     );
   });
 
