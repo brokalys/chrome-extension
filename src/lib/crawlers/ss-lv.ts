@@ -264,7 +264,7 @@ function runCrawler(): CrawledClassified | undefined {
           }
         } catch (e) {}
       })(),
-      published_at: document
+      date: document
         .querySelector('.msg_footer[align="right"]')
         ?.textContent?.replace(/^(.*?): /, ''),
 

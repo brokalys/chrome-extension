@@ -21,7 +21,32 @@ const GET_STATS = gql`
           calc_price_per_sqm
           area
           rooms
-          published_at
+          floor_min: floor
+          date: published_at
+        }
+      }
+      vzd {
+        apartments {
+          date: sale_date
+          price
+          floor_min: space_group_lowest_floor
+          floor_max: space_group_highest_floor
+          area: apartment_total_area_m2
+          rooms: room_count
+        }
+        premises {
+          date: sale_date
+          price
+          floor_min: space_group_lowest_floor
+          floor_max: space_group_highest_floor
+          area: space_group_total_area_m2
+          rooms: space_count_in_space_group
+        }
+        houses {
+          date: sale_date
+          price
+          floor_min: building_overground_floors
+          area: building_total_area_m2
         }
       }
     }
@@ -78,6 +103,7 @@ export default function useHistoricalData(classified: CrawledClassified) {
             }
           : null,
       properties: data?.building?.properties.results || [],
+      vzd: data?.building?.vzd,
     },
     loading: buildingIdLoading || loading,
     error: buildingIdError || error,

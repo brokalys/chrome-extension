@@ -12,10 +12,8 @@ import type { SidePanelProps } from './SidePanel';
 const defaultProps: SidePanelProps = {
   isOpen: true,
   isLoading: false,
-  data: {
-    building: null,
-    properties: [],
-  },
+  building: null,
+  results: [],
   error: undefined,
   pageClassified: mockPageClassified,
   onCloseClick: jest.fn(),
@@ -37,12 +35,9 @@ describe('SidePanel', () => {
     render(
       <SidePanel
         {...defaultProps}
-        data={{
-          ...defaultProps.data,
-          building: {
-            id: 123,
-            bounds: '',
-          },
+        building={{
+          id: 123,
+          bounds: '',
         }}
         pageClassified={{
           ...mockPageClassified,
@@ -64,12 +59,9 @@ describe('SidePanel', () => {
     render(
       <SidePanel
         {...defaultProps}
-        data={{
-          ...defaultProps.data,
-          building: {
-            id: 123,
-            bounds: '',
-          },
+        building={{
+          id: 123,
+          bounds: '',
         }}
         pageClassified={{
           ...mockPageClassified,
@@ -88,13 +80,10 @@ describe('SidePanel', () => {
     render(
       <SidePanel
         {...defaultProps}
-        data={{
-          ...defaultProps.data,
-          properties: [
-            { ...mockClassified, category: 'apartment' },
-            { ...mockClassified, category: 'house' },
-          ],
-        }}
+        results={[
+          { ...mockClassified, category: 'apartment' },
+          { ...mockClassified, category: 'house' },
+        ]}
       />,
     );
     const table = screen.getByTestId('data-table');
@@ -109,13 +98,10 @@ describe('SidePanel', () => {
     render(
       <SidePanel
         {...defaultProps}
-        data={{
-          ...defaultProps.data,
-          properties: [
-            { ...mockClassified, type: 'sell' },
-            { ...mockClassified, type: 'rent' },
-          ],
-        }}
+        results={[
+          { ...mockClassified, type: 'sell' },
+          { ...mockClassified, type: 'rent' },
+        ]}
       />,
     );
     const table = screen.getByTestId('data-table');
@@ -136,23 +122,20 @@ describe('SidePanel', () => {
     render(
       <SidePanel
         {...defaultProps}
-        data={{
-          ...defaultProps.data,
-          properties: [
-            {
-              ...mockClassified,
-              price: 100,
-              type: 'rent',
-              rent_type: 'monthly',
-            },
-            {
-              ...mockClassified,
-              price: 100,
-              type: 'rent',
-              rent_type: 'weekly',
-            },
-          ],
-        }}
+        results={[
+          {
+            ...mockClassified,
+            price: 100,
+            type: 'rent',
+            rent_type: 'monthly',
+          },
+          {
+            ...mockClassified,
+            price: 100,
+            type: 'rent',
+            rent_type: 'weekly',
+          },
+        ]}
       />,
     );
     const table = screen.getByTestId('data-table');

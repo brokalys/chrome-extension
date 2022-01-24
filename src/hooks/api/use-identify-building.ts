@@ -33,7 +33,7 @@ const IDENTIFY_BUILDING = gql`
     $cadastre_number: String
     $land_area: Float
     $land_area_measurement: String
-    $published_at: String
+    $date: String
     $views: Int
   ) {
     calculateBuildingId(
@@ -72,7 +72,7 @@ const IDENTIFY_BUILDING = gql`
 
       land_area: $land_area
       land_area_measurement: $land_area_measurement
-      published_at: $published_at
+      published_at: $date
       views: $views
     )
   }

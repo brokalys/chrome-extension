@@ -12,6 +12,7 @@ import {
 } from 'evergreen-ui';
 import { useCallback, useMemo, useState } from 'react';
 
+import { RESULT_CLASSIFIED, RESULT_REAL_SALE } from 'src/constants';
 import type { Building, Classified, CrawledClassified } from 'src/types';
 
 import FeedbackModal from '../FeedbackModal';
@@ -32,6 +33,13 @@ function useFilters() {
       Object.entries(filters)
         .map(([id, value]) => ({ id, value }))
         .filter(({ value }) => !!value)
+        .filter(
+          ({ id }) =>
+            !(
+              filters.source === RESULT_REAL_SALE &&
+              ['type', 'rent_type'].includes(id)
+            ),
+        )
         .filter(({ id }) => id !== 'rent_type' || filters.type === 'rent'),
     [filters],
   );
@@ -67,10 +75,8 @@ function useFeedbackModal() {
 export interface SidePanelProps {
   isOpen: boolean;
   isLoading: boolean;
-  data: {
-    building: Building | null;
-    properties: Classified[];
-  };
+  building: Building | null;
+  results: Classified[];
   error: Error | undefined;
   pageClassified: CrawledClassified;
   onCloseClick: () => void;
@@ -79,7 +85,8 @@ export interface SidePanelProps {
 const SidePanel: React.FC<SidePanelProps> = ({
   isOpen,
   isLoading,
-  data: { building, properties },
+  building,
+  results,
   error,
   pageClassified,
   onCloseClick,
@@ -142,6 +149,17 @@ const SidePanel: React.FC<SidePanelProps> = ({
             <Text marginLeft={minorScale(3)}>Filters:</Text>
 
             <SelectField
+              label="Data source"
+              value={filters.source}
+              onChange={(event) => setFilter('source', event.target.value)}
+              marginBottom={0}
+            >
+              <option value="">All data sources</option>
+              <option value={RESULT_REAL_SALE}>Real data</option>
+              <option value={RESULT_CLASSIFIED}>Classifieds</option>
+            </SelectField>
+
+            <SelectField
               label="Category"
               value={filters.category}
               onChange={(event) => setFilter('category', event.target.value)}
@@ -150,34 +168,40 @@ const SidePanel: React.FC<SidePanelProps> = ({
               <option value="">All categories</option>
               <option value="apartment">Apartment</option>
               <option value="house">House</option>
-              <option value="office">Office</option>
+              <option value="office">Premises</option>
             </SelectField>
 
-            <SelectField
-              label="Type"
-              value={filters.type}
-              onChange={(event) => setFilter('type', event.target.value)}
-              marginBottom={0}
-            >
-              <option value="">All types</option>
-              <option value="sell">Sell</option>
-              <option value="rent">Rent</option>
-              <option value="auction">Auction</option>
-            </SelectField>
+            {filters.source !== RESULT_REAL_SALE && (
+              <>
+                <SelectField
+                  label="Type"
+                  value={filters.type}
+                  onChange={(event) => setFilter('type', event.target.value)}
+                  marginBottom={0}
+                >
+                  <option value="">All types</option>
+                  <option value="sell">Sell</option>
+                  <option value="rent">Rent</option>
+                  <option value="auction">Auction</option>
+                </SelectField>
 
-            {filters.type === 'rent' && (
-              <SelectField
-                label="Rent type"
-                value={filters.rent_type}
-                onChange={(event) => setFilter('rent_type', event.target.value)}
-                marginBottom={0}
-              >
-                <option value="">All rent types</option>
-                <option value="yearly">Yearly</option>
-                <option value="monthly">Monthly</option>
-                <option value="weekly">Weekly</option>
-                <option value="daily">Daily</option>
-              </SelectField>
+                {filters.type === 'rent' && (
+                  <SelectField
+                    label="Rent type"
+                    value={filters.rent_type}
+                    onChange={(event) =>
+                      setFilter('rent_type', event.target.value)
+                    }
+                    marginBottom={0}
+                  >
+                    <option value="">All rent types</option>
+                    <option value="yearly">Yearly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="daily">Daily</option>
+                  </SelectField>
+                )}
+              </>
             )}
           </Pane>
 
@@ -188,7 +212,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                 <Button
                   iconAfter={ShareIcon}
                   is="a"
-                  href={`https://brokalys.com/#/${pageClassified.lat},${pageClassified.lng},18/building/${building.id}`}
+                  href={`https://brokalys.com/#/${pageClassified.lat},${pageClassified.lng},18/building/${building.id}?ref=extension`}
                   target="_blank"
                 >
                   View more data
@@ -197,7 +221,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                 <Button
                   iconAfter={ShareIcon}
                   is="a"
-                  href={`https://brokalys.com/#/${pageClassified.lat},${pageClassified.lng},18`}
+                  href={`https://brokalys.com/#/${pageClassified.lat},${pageClassified.lng},18?ref=extension`}
                   target="_blank"
                 >
                   View on Brokalys map
@@ -210,7 +234,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
       <Pane flex="1" overflowY="scroll" background="tint1" padding={16}>
         <PriceHistoryTable
           isLoading={isLoading}
-          data={properties}
+          data={results}
           pageClassified={pageClassified}
           filters={tableFilters}
           error={error}

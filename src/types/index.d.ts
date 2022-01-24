@@ -1,12 +1,17 @@
+import { RESULT_CLASSIFIED, RESULT_REAL_SALE } from 'src/constants';
+
 export interface Classified {
+  source: RESULT_CLASSIFIED | RESULT_REAL_SALE;
   category: string;
   type: string;
-  rent_type: string | null;
+  rent_type?: string | null;
   price: number;
   calc_price_per_sqm: number | null;
   area: number | null;
   rooms: number | null;
-  published_at: string | null;
+  floor_min: number | null;
+  floor_max?: number | null;
+  date: string | null;
 }
 
 export interface Building {
@@ -49,6 +54,6 @@ export interface CrawledClassified {
   cadastre_number?: string;
   land_area?: number;
   land_area_measurement?: string;
-  published_at?: string;
+  date?: string;
   views?: number;
 }

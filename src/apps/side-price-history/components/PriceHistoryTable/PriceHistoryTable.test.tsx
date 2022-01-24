@@ -21,6 +21,7 @@ describe('PriceHistoryTable', () => {
         {...defaultProps}
         data={[
           {
+            source: 'classified',
             category: 'apartment',
             type: 'rent',
             rent_type: 'monthly',
@@ -28,7 +29,8 @@ describe('PriceHistoryTable', () => {
             calc_price_per_sqm: 12,
             area: 10,
             rooms: 1,
-            published_at: '2021-11-02T08:00:00.000Z',
+            floor_min: null,
+            date: '2021-11-02T08:00:00.000Z',
           },
         ]}
       />,

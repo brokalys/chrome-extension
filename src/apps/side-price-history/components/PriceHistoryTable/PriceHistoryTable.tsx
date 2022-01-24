@@ -30,6 +30,11 @@ const RENT_TYPE_SUFFIX: Record<string, string> = {
 
 const columns: Column<Classified>[] = [
   {
+    Header: 'Source',
+    accessor: 'source',
+    filter: 'equals',
+  },
+  {
     Header: 'Category',
     accessor: 'category',
     filter: 'equals',
@@ -89,10 +94,39 @@ const columns: Column<Classified>[] = [
     accessor: 'rooms',
   },
   {
-    Header: 'Published at',
-    Cell: ({ value }) =>
-      value ? moment(value).format('YYYY-MM-DD HH:mm') : 'Before 2018',
-    accessor: 'published_at',
+    Header: 'Floor',
+    accessor: 'floor_min',
+    Cell: ({
+      row: {
+        original: { floor_min, floor_max },
+      },
+    }) => {
+      const isFloorMinNumber = typeof floor_min === 'number';
+      const isFloorMaxNumber = typeof floor_max === 'number';
+
+      if (!isFloorMinNumber) {
+        if (isFloorMaxNumber) {
+          return floor_max;
+        }
+        return null;
+      }
+
+      if (isFloorMaxNumber && floor_min !== floor_max) {
+        return [floor_min, floor_max].join(' - ');
+      }
+
+      return floor_min;
+    },
+  },
+  {
+    Header: 'Date',
+    Cell: ({ value, row }) =>
+      value
+        ? moment(value).format('YYYY-MM-DD HH:mm')
+        : row.original.source === 'classified'
+        ? 'Before 2018'
+        : null,
+    accessor: 'date',
   },
 ];
 
@@ -106,7 +140,7 @@ function getCellTextAlign(cell: Cell<Classified>): Property.TextAlign {
 
 function getColumnFlexBasis(column: Column<Classified>): number | undefined {
   switch (column.id) {
-    case 'published_at':
+    case 'date':
     case 'calc_price_per_sqm':
     case 'price':
       return 70;
@@ -150,7 +184,7 @@ const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
       initialState: {
         sortBy: [
           {
-            id: 'published_at',
+            id: 'date',
             desc: true,
           },
         ],
@@ -265,6 +299,7 @@ const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
                     <Table.TextCell
                       textAlign={getCellTextAlign(cell)}
                       flexBasis={getColumnFlexBasis(cell.column)}
+                      title={cell.value}
                       {...cell.getCellProps()}
                     >
                       {cell.render('Cell')}

@@ -7,8 +7,8 @@ export interface Property {
   calc_price_per_sqm: number | null;
   rooms: number | null;
   area: number | null;
-  floor: number | null;
-  published_at: string | null;
+  floor_min: number | null;
+  date: string | null;
 }
 
 export interface PropertySummary {
@@ -24,12 +24,46 @@ export interface PropertySummary {
   };
 }
 
+export interface VzdApartment {
+  id: number;
+  date: string;
+  price: number;
+  floor_min: number | null;
+  floor_max: number | null;
+  area: number | null;
+  rooms: number | null;
+}
+
+export interface VzdPremise {
+  id: number;
+  date: string;
+  price: number;
+  floor_min: number | null;
+  floor_max: number | null;
+  area: number | null;
+  rooms: number | null;
+}
+
+export interface VzdHouse {
+  id: number;
+  date: string;
+  price: number;
+  floor_min: number | null;
+  area: number | null;
+  rooms: number | null;
+}
+
 export interface Building {
   id: number;
   bounds: string;
   properties: {
     results: Property[];
     summary: PropertySummary;
+  };
+  vzd: {
+    apartments: VzdApartment[];
+    premises: VzdPremise[];
+    houses: VzdHouse[];
   };
 }
 
