@@ -2,7 +2,7 @@ try {
   const priceText = document.querySelector('#tdo_8')!;
 
   const link = document.createElement('a');
-  link.textContent = 'Atvērt brokalys cenu vēsturi';
+  link.textContent = 'View brokalys price history for this building';
   link.setAttribute('class', 'ads_opt_link_map');
   link.setAttribute('href', '#');
 

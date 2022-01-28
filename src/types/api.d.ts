@@ -55,7 +55,10 @@ export interface VzdHouse {
 
 export interface Building {
   id: number;
-  bounds: string;
+  cadastral_designation: string;
+  object_code: string;
+  land_cadastral_designation: string;
+  area: number;
   properties: {
     results: Property[];
     summary: PropertySummary;

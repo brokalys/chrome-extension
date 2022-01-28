@@ -25,6 +25,10 @@ const wrapper: React.FC = ({ children }) => (
 );
 
 describe('SidePanel', () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   it('displays the results table', () => {
     render(<SidePanel {...defaultProps} />);
 
@@ -37,7 +41,10 @@ describe('SidePanel', () => {
         {...defaultProps}
         building={{
           id: 123,
-          bounds: '',
+          cadastral_designation: '98940060012001',
+          object_code: '5201011110',
+          land_cadastral_designation: '98940060055',
+          area: 204.71308898926,
         }}
         pageClassified={{
           ...mockPageClassified,
@@ -55,13 +62,24 @@ describe('SidePanel', () => {
     );
   });
 
+  it('displays a pinger.brokalys.com link button', () => {
+    render(<SidePanel {...defaultProps} />);
+
+    expect(
+      screen.getByRole('link', { name: 'Set-up a PINGER' }),
+    ).toHaveAttribute('href', 'https://pinger.brokalys.com/#/?ref=extension');
+  });
+
   it('does not display a brokalys.com link button when lat is not set', () => {
     render(
       <SidePanel
         {...defaultProps}
         building={{
           id: 123,
-          bounds: '',
+          cadastral_designation: '98940060012001',
+          object_code: '5201011110',
+          land_cadastral_designation: '98940060055',
+          area: 204.71308898926,
         }}
         pageClassified={{
           ...mockPageClassified,
@@ -110,6 +128,17 @@ describe('SidePanel', () => {
 
     expect(within(table).getByText('rent')).toBeInTheDocument();
     expect(within(table).queryByText('sell')).not.toBeInTheDocument();
+  });
+
+  it('recovers filters from localStorage', () => {
+    localStorage.setItem(
+      'brokalys_priceHistoryTableFilters',
+      '{"type":"sell"}',
+    );
+
+    render(<SidePanel {...defaultProps} />);
+
+    expect(screen.getByDisplayValue('Sell')).toBeInTheDocument();
   });
 
   it('does not show a rent_type toggle by default', () => {

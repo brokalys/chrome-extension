@@ -2,6 +2,8 @@ import type { Property } from 'csstype';
 import {
   EmptyState,
   ErrorIcon,
+  FilterIcon,
+  Link,
   Pagination,
   Pane,
   SearchIcon,
@@ -9,6 +11,7 @@ import {
   SortDescIcon,
   Spinner,
   Table,
+  Text,
   minorScale,
 } from 'evergreen-ui';
 import moment from 'moment';
@@ -16,9 +19,10 @@ import { useEffect, useMemo } from 'react';
 import { useFilters, usePagination, useSortBy, useTable } from 'react-table';
 import type { Cell, Column, Filters } from 'react-table';
 
-import type { Classified, CrawledClassified } from 'src/types';
+import type { Building, Classified, CrawledClassified } from 'src/types';
 
 import PriceSummary from '../PriceSummary';
+import BuildingInformation from './BuildingInformation';
 
 const RENT_TYPE_SUFFIX: Record<string, string> = {
   yearly: '/y',
@@ -152,16 +156,20 @@ function getColumnFlexBasis(column: Column<Classified>): number | undefined {
 export interface PriceHistoryTableProps {
   isLoading: boolean;
   data: Classified[];
+  building: Building | null;
   pageClassified: CrawledClassified;
   filters: Filters<Classified>;
+  clearFilters: () => void;
   error: Error | undefined;
 }
 
 const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
   isLoading,
   data,
+  building,
   pageClassified,
   filters,
+  clearFilters,
   error,
 }) => {
   const {
@@ -204,6 +212,7 @@ const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
   }, [filters, setAllFilters]);
 
   const hasResults = page.length > 0;
+  const isFilterActive = filters.length > 0;
 
   const prices = useMemo(
     () => rows.map(({ values }) => values.price).filter((value) => !!value),
@@ -218,104 +227,144 @@ const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
   );
 
   return (
-    <Pane
-      display="flex"
-      justifyContent="center"
-      flexDirection="column"
-      gap={12}
-    >
-      {pageClassified.category !== 'land' && (
-        <PriceSummary prices={prices} pricesPerSqm={pricesPerSqm} />
-      )}
-
-      <Table data-testid="data-table" aria-live="polite" aria-busy={isLoading}>
-        {headerGroups.map((headerGroup) => (
-          <Table.Head height={30} {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <Table.TextHeaderCell
-                textAlign="center"
-                flexBasis={getColumnFlexBasis(column)}
-                {...column.getHeaderProps(column.getSortByToggleProps())}
-              >
-                <Pane display="flex" gap={minorScale(3)}>
-                  {column.isSorted &&
-                    (column.isSortedDesc ? <SortDescIcon /> : <SortAscIcon />)}
-
-                  {column.render('Header')}
-                </Pane>
-              </Table.TextHeaderCell>
-            ))}
-          </Table.Head>
-        ))}
-
-        <Table.Body>
-          {isLoading ? (
-            <Pane
-              backgroundColor="white"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              padding={64}
-            >
-              <Spinner />
-            </Pane>
-          ) : error ? (
-            <EmptyState
-              background="light"
-              title="An error occurred"
-              orientation="horizontal"
-              icon={<ErrorIcon color="danger" />}
-              iconBgColor="#EDEFF5"
-              description="We are experiencing some problems. Try reloading the page. If that doesn't solve it, please click the bug report button above."
-            />
-          ) : pageClassified.category === 'land' ? (
-            <EmptyState
-              background="light"
-              title="Price history unavailable"
-              orientation="horizontal"
-              icon={<SearchIcon color="#C1C4D6" />}
-              iconBgColor="#EDEFF5"
-              description="Unfortunately LAND type classifieds currently do not have price history. Interested in this feature? Submit a feature request!"
-            />
-          ) : data.length === 0 ? (
-            <EmptyState
-              background="light"
-              title="No price history found"
-              orientation="horizontal"
-              icon={<SearchIcon color="#C1C4D6" />}
-              iconBgColor="#EDEFF5"
-              description="Sadly no price history could be found for this property."
-            />
-          ) : !hasResults ? (
-            <EmptyState
-              background="light"
-              title="No classifieds could be found with the given filters"
-              orientation="horizontal"
-              icon={<SearchIcon color="#C1C4D6" />}
-              iconBgColor="#EDEFF5"
-              description="Clear the filters or open a different property to see data."
-            />
-          ) : (
-            page.map((row) => {
-              prepareRow(row);
-              return (
-                <Table.Row height={30} {...row.getRowProps()}>
-                  {row.cells.map((cell) => (
-                    <Table.TextCell
-                      textAlign={getCellTextAlign(cell)}
-                      flexBasis={getColumnFlexBasis(cell.column)}
-                      title={cell.value}
-                      {...cell.getCellProps()}
-                    >
-                      {cell.render('Cell')}
-                    </Table.TextCell>
-                  ))}
-                </Table.Row>
-              );
-            })
+    <>
+      <Pane
+        display="flex"
+        justifyContent="center"
+        flexDirection="column"
+        gap={16}
+      >
+        <Pane
+          display="flex"
+          justifyContent="space-between"
+          flexDirection="row"
+          alignItems="stretch"
+          gap={12}
+        >
+          {building && <BuildingInformation building={building} />}
+          {pageClassified.category !== 'land' && (
+            <PriceSummary prices={prices} pricesPerSqm={pricesPerSqm} />
           )}
-        </Table.Body>
-      </Table>
+        </Pane>
+
+        <Table
+          data-testid="data-table"
+          aria-live="polite"
+          aria-busy={isLoading}
+        >
+          {isFilterActive && (
+            <Table.Row height={40}>
+              <Table.TextCell>
+                <Text color="muted" size={300}>
+                  <FilterIcon size={12} /> Filters applied. {rows.length}/
+                  {data.length} table entries shown.{' '}
+                  <Link
+                    href="#"
+                    onClick={(event: React.MouseEvent) => {
+                      event.preventDefault();
+                      clearFilters();
+                    }}
+                    size={300}
+                  >
+                    Clear filters
+                  </Link>
+                </Text>
+              </Table.TextCell>
+            </Table.Row>
+          )}
+
+          {headerGroups.map((headerGroup) => (
+            <Table.Head height={30} {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <Table.TextHeaderCell
+                  textAlign="center"
+                  flexBasis={getColumnFlexBasis(column)}
+                  {...column.getHeaderProps(column.getSortByToggleProps())}
+                >
+                  <Pane display="flex" gap={minorScale(3)}>
+                    {column.isSorted &&
+                      (column.isSortedDesc ? (
+                        <SortDescIcon />
+                      ) : (
+                        <SortAscIcon />
+                      ))}
+
+                    {column.render('Header')}
+                  </Pane>
+                </Table.TextHeaderCell>
+              ))}
+            </Table.Head>
+          ))}
+
+          <Table.Body>
+            {isLoading ? (
+              <Pane
+                backgroundColor="white"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                padding={64}
+              >
+                <Spinner />
+              </Pane>
+            ) : error ? (
+              <EmptyState
+                background="light"
+                title="An error occurred"
+                orientation="horizontal"
+                icon={<ErrorIcon color="danger" />}
+                iconBgColor="#EDEFF5"
+                description="We are experiencing some problems. Try reloading the page. If that doesn't solve it, please click the bug report button above."
+              />
+            ) : pageClassified.category === 'land' ? (
+              <EmptyState
+                background="light"
+                title="Price history unavailable"
+                orientation="horizontal"
+                icon={<SearchIcon color="#C1C4D6" />}
+                iconBgColor="#EDEFF5"
+                description="Unfortunately LAND type classifieds currently do not have price history. Interested in this feature? Submit a feature request!"
+              />
+            ) : data.length === 0 ? (
+              <EmptyState
+                background="light"
+                title="No price history found"
+                orientation="horizontal"
+                icon={<SearchIcon color="#C1C4D6" />}
+                iconBgColor="#EDEFF5"
+                description="Sadly no price history could be found for this property."
+              />
+            ) : !hasResults ? (
+              <EmptyState
+                background="light"
+                title="No data could be found with the given filters"
+                orientation="horizontal"
+                icon={<SearchIcon color="#C1C4D6" />}
+                iconBgColor="#EDEFF5"
+                description="Clear the filters or open a different property to see data."
+              />
+            ) : (
+              page.map((row) => {
+                prepareRow(row);
+                return (
+                  <Table.Row height={30} {...row.getRowProps()}>
+                    {row.cells.map((cell) => (
+                      <Table.TextCell
+                        textAlign={getCellTextAlign(cell)}
+                        flexBasis={getColumnFlexBasis(cell.column)}
+                        title={cell.value}
+                        {...cell.getCellProps()}
+                      >
+                        {cell.render('Cell')}
+                      </Table.TextCell>
+                    ))}
+                  </Table.Row>
+                );
+              })
+            )}
+          </Table.Body>
+        </Table>
+      </Pane>
 
       {pageCount > 1 && (
         <Pagination
@@ -324,7 +373,7 @@ const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
           onPageChange={(pageNum) => gotoPage(pageNum - 1)}
         />
       )}
-    </Pane>
+    </>
   );
 };
 

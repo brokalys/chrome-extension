@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import mockClassified from 'src/__test__/mock-classified';
 import mockPageClassified from 'src/__test__/mock-page-classified';
@@ -9,7 +10,9 @@ import type { PriceHistoryTableProps } from './PriceHistoryTable';
 const defaultProps: PriceHistoryTableProps = {
   isLoading: false,
   data: [],
+  building: null,
   filters: [],
+  clearFilters: jest.fn(),
   error: undefined,
   pageClassified: mockPageClassified,
 };
@@ -43,6 +46,33 @@ describe('PriceHistoryTable', () => {
     expect(screen.getByText('10 m')).toBeInTheDocument();
     expect(screen.getByText('1')).toBeInTheDocument();
     expect(screen.getByText('2021-11-02 08:00')).toBeInTheDocument();
+  });
+
+  it('displays the building information block if building is found', () => {
+    render(
+      <PriceHistoryTable
+        {...defaultProps}
+        building={{
+          id: 123,
+          cadastral_designation: '98940060012003',
+          land_cadastral_designation: '98940060055',
+          object_code: '5201011110',
+          area: 120,
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'Building information' }),
+    ).toBeInTheDocument();
+  });
+
+  it('displays no building information block if building is not found', () => {
+    render(<PriceHistoryTable {...defaultProps} building={null} />);
+
+    expect(
+      screen.queryByRole('heading', { name: 'Building information' }),
+    ).not.toBeInTheDocument();
   });
 
   it('displays a loading indicator whilst the data is loading', () => {
@@ -102,23 +132,67 @@ describe('PriceHistoryTable', () => {
     );
 
     expect(
-      screen.getByText('No classifieds could be found with the given filters'),
+      screen.getByText('No data could be found with the given filters'),
     ).toBeInTheDocument();
   });
 
-  it('filters by apartment', () => {
-    render(
-      <PriceHistoryTable
-        {...defaultProps}
-        data={[
-          { ...mockClassified, category: 'apartment' },
-          { ...mockClassified, category: 'house' },
-        ]}
-        filters={[{ id: 'category', value: 'apartment' }]}
-      />,
-    );
+  describe('filtering', () => {
+    it('filters by apartment', () => {
+      render(
+        <PriceHistoryTable
+          {...defaultProps}
+          data={[
+            { ...mockClassified, category: 'apartment' },
+            { ...mockClassified, category: 'house' },
+          ]}
+          filters={[{ id: 'category', value: 'apartment' }]}
+        />,
+      );
 
-    expect(screen.getByText('apartment')).toBeInTheDocument();
-    expect(screen.queryByText('house')).not.toBeInTheDocument();
+      expect(screen.getByText('apartment')).toBeInTheDocument();
+      expect(screen.queryByText('house')).not.toBeInTheDocument();
+    });
+
+    it('displays a filtering help block only if there are filters active', () => {
+      const { rerender } = render(
+        <PriceHistoryTable {...defaultProps} filters={[]} />,
+      );
+
+      expect(screen.queryByText(/Filters applied/)).not.toBeInTheDocument();
+
+      rerender(
+        <PriceHistoryTable
+          {...defaultProps}
+          filters={[
+            {
+              id: 'category',
+              value: 'apartment',
+            },
+          ]}
+        />,
+      );
+
+      expect(screen.getByText(/Filters applied/)).toBeInTheDocument();
+    });
+
+    it('clicking "clear filters" triggers the callback', () => {
+      const clearFilters = jest.fn();
+      render(
+        <PriceHistoryTable
+          {...defaultProps}
+          filters={[
+            {
+              id: 'category',
+              value: 'apartment',
+            },
+          ]}
+          clearFilters={clearFilters}
+        />,
+      );
+
+      userEvent.click(screen.getByRole('link', { name: 'Clear filters' }));
+
+      expect(clearFilters).toBeCalled();
+    });
   });
 });

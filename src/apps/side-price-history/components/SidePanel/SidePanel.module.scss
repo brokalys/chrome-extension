@@ -3,3 +3,21 @@
     display: none;
   }
 }
+
+.activeFilter {
+  select {
+    background-color: #3366ff;
+    border-color: #3366ff;
+    color: #fff;
+
+    &:hover,
+    &:active {
+      background-color: #2952cc !important;
+      border-color: #2b52cf !important;
+    }
+  }
+
+  svg {
+    fill: #fff;
+  }
+}

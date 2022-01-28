@@ -10,7 +10,10 @@ const GET_STATS = gql`
   query ChromeExtension_GetState($buildingId: Int!, $filter: PropertyFilter) {
     building(id: $buildingId) {
       id
-      bounds
+      cadastral_designation
+      object_code
+      land_cadastral_designation
+      area
       properties(filter: $filter) {
         results {
           id
@@ -95,13 +98,7 @@ export default function useHistoricalData(classified: CrawledClassified) {
 
   return {
     data: {
-      building:
-        data && data.building
-          ? {
-              id: data.building.id,
-              bounds: data.building.bounds,
-            }
-          : null,
+      building: data?.building || null,
       properties: (data?.building?.properties.results || []).map((row) => {
         if (['office'].includes(row.type)) {
           return {
