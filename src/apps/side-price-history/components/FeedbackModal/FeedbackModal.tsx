@@ -36,11 +36,13 @@ export const SUBMIT_FEEDBACK = gql`
 export interface FeedbackModalProps {
   intent?: 'bug' | 'default';
   onSubmitComplete: () => void;
+  onClose: () => void;
 }
 
 const FeedbackModal: React.FC<FeedbackModalProps> = ({
   intent = 'default',
   onSubmitComplete,
+  onClose,
 }) => {
   const [description, setDescription] = useState('');
   const [email, setEmail] = useState('');
@@ -61,6 +63,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
           },
         });
       }}
+      onCloseComplete={onClose}
       isConfirmLoading={loading}
     >
       {error && (

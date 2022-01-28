@@ -11,6 +11,7 @@ jest.mock('@bugsnag/js');
 const defaultProps: FeedbackModalProps = {
   intent: 'bug',
   onSubmitComplete: jest.fn(),
+  onClose: jest.fn(),
 };
 
 const mocks: MockedResponse[] = [

@@ -123,6 +123,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
         <FeedbackModal
           intent={feedbackModalIntent}
           onSubmitComplete={closeFeedbackModal}
+          onClose={closeFeedbackModal}
         />
       )}
 
