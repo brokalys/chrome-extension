@@ -1,6 +1,6 @@
 {
   "name": "chrome-extension",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "Extends the ss.lv interface with historical price data for property classifieds.",
   "author": "Matiss Janis Aboltins <matiss@brokalys.com>",
   "private": true,
