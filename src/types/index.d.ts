@@ -8,19 +8,30 @@ export interface Classified {
   price: number;
   calc_price_per_sqm: number | null;
   area: number | null;
-  rooms: number | null;
-  floor_min: number | null;
+  rooms?: number | null;
+  floor_min?: number | null;
   floor_max?: number | null;
   date: string | null;
 }
 
 export interface Building {
   id: number;
+  type: 'building';
   cadastral_designation: string;
   object_code: string;
   land_cadastral_designation: string;
   area: number;
 }
+
+export interface Land {
+  id: number;
+  type: 'land';
+  cadastral_designation: string;
+  object_code: string;
+  area: number;
+}
+
+export type Estate = Building | Land;
 
 export interface CrawledClassified {
   source?: string;

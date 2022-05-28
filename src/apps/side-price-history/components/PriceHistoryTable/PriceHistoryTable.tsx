@@ -19,7 +19,7 @@ import { useEffect, useMemo } from 'react';
 import { useFilters, usePagination, useSortBy, useTable } from 'react-table';
 import type { Cell, Column, Filters } from 'react-table';
 
-import type { Building, Classified, CrawledClassified } from 'src/types';
+import type { Classified, CrawledClassified, Estate } from 'src/types';
 
 import PriceSummary from '../PriceSummary';
 import BuildingInformation from './BuildingInformation';
@@ -156,7 +156,7 @@ function getColumnFlexBasis(column: Column<Classified>): number | undefined {
 export interface PriceHistoryTableProps {
   isLoading: boolean;
   data: Classified[];
-  building: Building | null;
+  estate: Estate | null;
   pageClassified: CrawledClassified;
   filters: Filters<Classified>;
   clearFilters: () => void;
@@ -166,7 +166,7 @@ export interface PriceHistoryTableProps {
 const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
   isLoading,
   data,
-  building,
+  estate,
   pageClassified,
   filters,
   clearFilters,
@@ -197,7 +197,10 @@ const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
           },
         ],
         pageSize: 15,
-        hiddenColumns: ['rent_type'],
+        hiddenColumns: [
+          'rent_type',
+          ...(pageClassified.category === 'land' ? ['floor_min', 'rooms'] : []),
+        ],
       },
       autoResetFilters: false,
       disableSortRemove: true,
@@ -241,10 +244,8 @@ const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
           alignItems="stretch"
           gap={12}
         >
-          {building && <BuildingInformation building={building} />}
-          {pageClassified.category !== 'land' && (
-            <PriceSummary prices={prices} pricesPerSqm={pricesPerSqm} />
-          )}
+          {estate && <BuildingInformation estate={estate} />}
+          <PriceSummary prices={prices} pricesPerSqm={pricesPerSqm} />
         </Pane>
 
         <Table
@@ -315,15 +316,6 @@ const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({
                 icon={<ErrorIcon color="danger" />}
                 iconBgColor="#EDEFF5"
                 description="We are experiencing some problems. Try reloading the page. If that doesn't solve it, please click the bug report button above."
-              />
-            ) : pageClassified.category === 'land' ? (
-              <EmptyState
-                background="light"
-                title="Price history unavailable"
-                orientation="horizontal"
-                icon={<SearchIcon color="#C1C4D6" />}
-                iconBgColor="#EDEFF5"
-                description="Unfortunately LAND type classifieds currently do not have price history. Interested in this feature? Submit a feature request!"
               />
             ) : data.length === 0 ? (
               <EmptyState

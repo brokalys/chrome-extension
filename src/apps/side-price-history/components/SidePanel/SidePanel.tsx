@@ -15,13 +15,13 @@ import { useCallback, useMemo, useState } from 'react';
 import { useLocalStorage } from 'react-use-storage';
 
 import { RESULT_CLASSIFIED, RESULT_REAL_SALE } from 'src/constants';
-import type { Building, Classified, CrawledClassified } from 'src/types';
+import type { Classified, CrawledClassified, Estate } from 'src/types';
 
 import FeedbackModal from '../FeedbackModal';
 import PriceHistoryTable from '../PriceHistoryTable';
 import styles from './SidePanel.module.scss';
 
-function useFilters() {
+function useFilters(pageClassified: CrawledClassified) {
   const [filters, setFilters] = useLocalStorage<Record<string, string>>(
     'brokalys_priceHistoryTableFilters',
     {},
@@ -46,8 +46,12 @@ function useFilters() {
               ['type', 'rent_type'].includes(id)
             ),
         )
+        .filter(
+          ({ id }) =>
+            !(pageClassified.category === 'land' && id === 'category'),
+        )
         .filter(({ id }) => id !== 'rent_type' || filters.type === 'rent'),
-    [filters],
+    [filters, pageClassified],
   );
 
   const clearFilters = useCallback(() => {
@@ -85,7 +89,7 @@ function useFeedbackModal() {
 export interface SidePanelProps {
   isOpen: boolean;
   isLoading: boolean;
-  building: Building | null;
+  estate: Estate | null;
   results: Classified[];
   error: Error | undefined;
   pageClassified: CrawledClassified;
@@ -95,13 +99,14 @@ export interface SidePanelProps {
 const SidePanel: React.FC<SidePanelProps> = ({
   isOpen,
   isLoading,
-  building,
+  estate,
   results,
   error,
   pageClassified,
   onCloseClick,
 }) => {
-  const [filters, setFilter, clearFilters, tableFilters] = useFilters();
+  const [filters, setFilter, clearFilters, tableFilters] =
+    useFilters(pageClassified);
   const [
     { isOpen: isOpenFeedbackModal, intent: feedbackModalIntent },
     openFeedbackModal,
@@ -146,7 +151,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
             </Button>
           </Pane>
 
-          <Heading size={600}>Price history for this building</Heading>
+          <Heading size={600}>Price history for this estate</Heading>
         </Pane>
 
         <Pane display="flex" alignItems="center" justifyContent="space-between">
@@ -174,18 +179,20 @@ const SidePanel: React.FC<SidePanelProps> = ({
               <option value={RESULT_CLASSIFIED}>Classifieds</option>
             </SelectField>
 
-            <SelectField
-              label="Category"
-              value={filters.category || ''}
-              onChange={(event) => setFilter('category', event.target.value)}
-              marginBottom={0}
-              className={filters.category && styles.activeFilter}
-            >
-              <option value="">All categories</option>
-              <option value="apartment">Apartment</option>
-              <option value="house">House</option>
-              <option value="premise">Premise</option>
-            </SelectField>
+            {pageClassified.category !== 'land' && (
+              <SelectField
+                label="Category"
+                value={filters.category || ''}
+                onChange={(event) => setFilter('category', event.target.value)}
+                marginBottom={0}
+                className={filters.category && styles.activeFilter}
+              >
+                <option value="">All categories</option>
+                <option value="apartment">Apartment</option>
+                <option value="house">House</option>
+                <option value="premise">Premise</option>
+              </SelectField>
+            )}
 
             {filters.source !== RESULT_REAL_SALE && (
               <>
@@ -237,11 +244,11 @@ const SidePanel: React.FC<SidePanelProps> = ({
 
             {pageClassified.lat &&
               pageClassified.lng &&
-              (building ? (
+              (estate ? (
                 <Button
                   iconAfter={ShareIcon}
                   is="a"
-                  href={`https://brokalys.com/#/${pageClassified.lat},${pageClassified.lng},18/building/${building.id}?ref=extension`}
+                  href={`https://brokalys.com/#/${pageClassified.lat},${pageClassified.lng},18/estate/${estate.type}/${estate.id}?ref=extension`}
                   target="_blank"
                 >
                   View more data
@@ -264,7 +271,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
         <PriceHistoryTable
           isLoading={isLoading}
           data={results}
-          building={building}
+          estate={estate}
           pageClassified={pageClassified}
           filters={tableFilters}
           clearFilters={clearFilters}

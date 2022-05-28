@@ -53,6 +53,13 @@ export interface VzdHouse {
   rooms: number | null;
 }
 
+export interface VzdLand {
+  id: number;
+  date: string;
+  price: number;
+  area: number | null;
+}
+
 export interface Building {
   id: number;
   cadastral_designation: string;
@@ -70,6 +77,24 @@ export interface Building {
   };
 }
 
+export interface Land {
+  id: number;
+  cadastral_designation: string;
+  object_code: string;
+  area: number;
+  properties: {
+    results: Property[];
+    summary: PropertySummary;
+  };
+  vzd: {
+    land: VzdLand[];
+  };
+}
+
 export interface GetStatsResponse {
   building: Building;
+}
+
+export interface GetLandStatsResponse {
+  land: Land;
 }

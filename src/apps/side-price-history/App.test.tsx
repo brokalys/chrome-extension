@@ -34,7 +34,7 @@ describe('App', () => {
     userEvent.click(screen.getByRole('button', { name: 'View price history' }));
 
     expect(
-      screen.getByText('Price history for this building'),
+      screen.getByText('Price history for this estate'),
     ).toBeInTheDocument();
     expect(screen.queryByText('View price history')).not.toBeInTheDocument();
   });

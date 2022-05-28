@@ -4,8 +4,9 @@ import BuildingInformation from './BuildingInformation';
 import type { BuildingInformationProps } from './BuildingInformation';
 
 const defaultProps: BuildingInformationProps = {
-  building: {
+  estate: {
     id: 123,
+    type: 'building',
     cadastral_designation: '98940060012003',
     land_cadastral_designation: '98940060055',
     object_code: '5201011110',
@@ -18,11 +19,11 @@ describe('BuildingInformation', () => {
     render(<BuildingInformation {...defaultProps} />);
 
     expect(
-      screen.getByRole('heading', { name: 'Building information' }),
+      screen.getByRole('heading', { name: 'Estate information' }),
     ).toBeInTheDocument();
     expect(screen.getByText('Area:')).toBeInTheDocument();
     expect(
-      screen.getByText('Building cadastral designation:'),
+      screen.getByText('Estate cadastral designation:'),
     ).toBeInTheDocument();
     expect(screen.getByText('Land cadastral designation:')).toBeInTheDocument();
     expect(screen.getByText('Code:')).toBeInTheDocument();

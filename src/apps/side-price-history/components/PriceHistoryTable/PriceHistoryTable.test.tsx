@@ -10,7 +10,7 @@ import type { PriceHistoryTableProps } from './PriceHistoryTable';
 const defaultProps: PriceHistoryTableProps = {
   isLoading: false,
   data: [],
-  building: null,
+  estate: null,
   filters: [],
   clearFilters: jest.fn(),
   error: undefined,
@@ -48,12 +48,13 @@ describe('PriceHistoryTable', () => {
     expect(screen.getByText('2021-11-02 08:00')).toBeInTheDocument();
   });
 
-  it('displays the building information block if building is found', () => {
+  it('displays the estate information block if building is found', () => {
     render(
       <PriceHistoryTable
         {...defaultProps}
-        building={{
+        estate={{
           id: 123,
+          type: 'building',
           cadastral_designation: '98940060012003',
           land_cadastral_designation: '98940060055',
           object_code: '5201011110',
@@ -63,15 +64,15 @@ describe('PriceHistoryTable', () => {
     );
 
     expect(
-      screen.getByRole('heading', { name: 'Building information' }),
+      screen.getByRole('heading', { name: 'Estate information' }),
     ).toBeInTheDocument();
   });
 
-  it('displays no building information block if building is not found', () => {
-    render(<PriceHistoryTable {...defaultProps} building={null} />);
+  it('displays no estate information block if building is not found', () => {
+    render(<PriceHistoryTable {...defaultProps} estate={null} />);
 
     expect(
-      screen.queryByRole('heading', { name: 'Building information' }),
+      screen.queryByRole('heading', { name: 'Estate information' }),
     ).not.toBeInTheDocument();
   });
 
@@ -100,20 +101,6 @@ describe('PriceHistoryTable', () => {
     );
 
     expect(screen.getByText('An error occurred')).toBeInTheDocument();
-  });
-
-  it('displays a no-results error for LAND type category classifieds', () => {
-    render(
-      <PriceHistoryTable
-        {...defaultProps}
-        pageClassified={{
-          ...mockPageClassified,
-          category: 'land',
-        }}
-      />,
-    );
-
-    expect(screen.getByText('Price history unavailable')).toBeInTheDocument();
   });
 
   it('displays no-results text when no results are found', () => {

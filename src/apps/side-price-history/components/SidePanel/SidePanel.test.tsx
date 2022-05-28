@@ -12,7 +12,7 @@ import type { SidePanelProps } from './SidePanel';
 const defaultProps: SidePanelProps = {
   isOpen: true,
   isLoading: false,
-  building: null,
+  estate: null,
   results: [],
   error: undefined,
   pageClassified: mockPageClassified,
@@ -39,8 +39,9 @@ describe('SidePanel', () => {
     render(
       <SidePanel
         {...defaultProps}
-        building={{
+        estate={{
           id: 123,
+          type: 'building',
           cadastral_designation: '98940060012001',
           object_code: '5201011110',
           land_cadastral_designation: '98940060055',
@@ -58,7 +59,7 @@ describe('SidePanel', () => {
       screen.getByRole('link', { name: 'View more data' }),
     ).toHaveAttribute(
       'href',
-      'https://brokalys.com/#/56.241,24.98134,18/building/123?ref=extension',
+      'https://brokalys.com/#/56.241,24.98134,18/estate/building/123?ref=extension',
     );
   });
 
@@ -74,8 +75,9 @@ describe('SidePanel', () => {
     render(
       <SidePanel
         {...defaultProps}
-        building={{
+        estate={{
           id: 123,
+          type: 'building',
           cadastral_designation: '98940060012001',
           object_code: '5201011110',
           land_cadastral_designation: '98940060055',
