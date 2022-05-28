@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 import apolloErrorHandler from 'src/lib/apollo-error-handler';
 import { CrawledClassified } from 'src/types';
 
-const IDENTIFY_BUILDING = gql`
-  mutation ChromeExtension_CalculateBuildingId(
+const IDENTIFY_ESTATE = gql`
+  mutation ChromeExtension_CalculateEstateId(
     $source: String
     $url: String
     $category: String
@@ -36,7 +36,7 @@ const IDENTIFY_BUILDING = gql`
     $date: String
     $views: Int
   ) {
-    calculateBuildingId(
+    calculateEstateId(
       source: $source
       url: $url
 
@@ -74,23 +74,29 @@ const IDENTIFY_BUILDING = gql`
       land_area_measurement: $land_area_measurement
       published_at: $date
       views: $views
-    )
+    ) {
+      id
+      type
+    }
   }
 `;
 
-interface CalculateBuildingIdRequest
+interface CalculateEstateIdRequest
   extends Omit<CrawledClassified, 'additional_data'> {
   additional_data?: string;
 }
-interface CalculateBuildingIdResponse {
-  calculateBuildingId: number | null;
+interface CalculateEstateIdResponse {
+  calculateEstateId: {
+    id: number | null;
+    type: string;
+  };
 }
 
 export default function useIdentifyBuilding(variables: CrawledClassified) {
   const [mutateFunction, { data, loading, error }] = useMutation<
-    CalculateBuildingIdResponse,
-    CalculateBuildingIdRequest
-  >(IDENTIFY_BUILDING);
+    CalculateEstateIdResponse,
+    CalculateEstateIdRequest
+  >(IDENTIFY_ESTATE);
 
   useEffect(() => {
     mutateFunction({
@@ -103,7 +109,7 @@ export default function useIdentifyBuilding(variables: CrawledClassified) {
   }, [variables, mutateFunction]);
 
   return {
-    data: data?.calculateBuildingId,
+    data: data?.calculateEstateId,
     loading,
     error,
   };

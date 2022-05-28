@@ -4,7 +4,7 @@ import apolloErrorHandler from 'src/lib/apollo-error-handler';
 import { CrawledClassified } from 'src/types';
 import { GetStatsResponse } from 'src/types/api';
 
-import useIdentifyBuilding from './use-identify-building';
+import useIdentifyEstate from './use-identify-estate';
 
 const GET_STATS = gql`
   query ChromeExtension_GetState($buildingId: Int!, $filter: PropertyFilter) {
@@ -69,16 +69,16 @@ interface GetStatsVars {
  */
 export default function useHistoricalData(classified: CrawledClassified) {
   const {
-    data: buildingId,
-    loading: buildingIdLoading,
-    error: buildingIdError,
-  } = useIdentifyBuilding(classified);
+    data: estateData,
+    loading: estateIdLoading,
+    error: estateIdError,
+  } = useIdentifyEstate(classified);
 
   const { data, loading, error } = useQuery<GetStatsResponse, GetStatsVars>(
     GET_STATS,
     {
       variables: {
-        buildingId: buildingId!,
+        buildingId: estateData?.id || 0,
         filter: {
           category: {
             in: ['apartment', 'house', 'office'],
@@ -91,7 +91,7 @@ export default function useHistoricalData(classified: CrawledClassified) {
           },
         },
       },
-      skip: !buildingId,
+      skip: !estateData || !estateData.id || estateData.type !== 'building',
       onError: apolloErrorHandler,
     },
   );
@@ -110,7 +110,7 @@ export default function useHistoricalData(classified: CrawledClassified) {
       }),
       vzd: data?.building?.vzd,
     },
-    loading: buildingIdLoading || loading,
-    error: buildingIdError || error,
+    loading: estateIdLoading || loading,
+    error: estateIdError || error,
   };
 }
