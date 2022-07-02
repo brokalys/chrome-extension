@@ -21,3 +21,8 @@
     fill: #fff;
   }
 }
+
+// Increase side-panel z-index to overlay everything in city24
+*[evergreen-portal-container] *[data-state] {
+  z-index: 10000;
+}

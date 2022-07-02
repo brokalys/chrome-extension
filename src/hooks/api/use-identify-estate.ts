@@ -93,7 +93,7 @@ interface CalculateEstateIdResponse {
 }
 
 export default function useIdentifyBuilding(variables: CrawledClassified) {
-  const [mutateFunction, { data, loading, error }] = useMutation<
+  const [mutateFunction, { data, loading, error, called }] = useMutation<
     CalculateEstateIdResponse,
     CalculateEstateIdRequest
   >(IDENTIFY_ESTATE);
@@ -110,7 +110,7 @@ export default function useIdentifyBuilding(variables: CrawledClassified) {
 
   return {
     data: data?.calculateEstateId,
-    loading,
+    loading: loading || !called,
     error,
   };
 }

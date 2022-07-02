@@ -14,14 +14,28 @@ import SidePanelOpenButton from './components/SidePanelOpenButton';
 
 const App: React.FC = () => {
   const { data, loading } = usePageClassified();
+  const [isOpen, setIsOpen] = useState(false);
 
-  if (loading || !data) return null;
+  if (loading)
+    return (
+      <SidePanelOpenButton
+        isLoading
+        results={[]}
+        onOpenClick={() => setIsOpen(true)}
+      />
+    );
 
-  return <Content pageClassified={data} />;
+  if (!data) return null;
+
+  return (
+    <Content pageClassified={data} isOpen={isOpen} setIsOpen={setIsOpen} />
+  );
 };
 
 interface ContentProps {
   pageClassified: CrawledClassified;
+  isOpen: boolean;
+  setIsOpen: (state: boolean) => void;
 }
 
 function isLand(data: Response): data is LandResponse {
@@ -81,9 +95,12 @@ function mapResults(data: Response) {
   return [];
 }
 
-const Content: React.FC<ContentProps> = ({ pageClassified }) => {
+const Content: React.FC<ContentProps> = ({
+  pageClassified,
+  isOpen,
+  setIsOpen,
+}) => {
   const { loading, error, data } = useHistoricalData(pageClassified);
-  const [isOpen, setIsOpen] = useState(false);
 
   const results = useMemo(() => mapResults(data), [data]);
 

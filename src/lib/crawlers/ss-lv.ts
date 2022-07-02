@@ -3,7 +3,7 @@ import { isEqual } from 'lodash';
 
 import type { CrawledClassified } from 'src/types';
 
-function runCrawler(): CrawledClassified | undefined {
+async function runCrawler(): Promise<CrawledClassified | undefined> {
   let category;
   switch (document.querySelector('.headtitle a')?.textContent) {
     case 'Dzīvokļi':
